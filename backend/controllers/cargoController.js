@@ -27,9 +27,9 @@ exports.criarCargo = async (req, res) => {
     const { idCargo, nomeCargo} = req.body;
 
     // Validação básica
-    if (!nomeCargo || !nota_maxima_cargo || !texto_complementar_cargo) {
+    if (!nomeCargo) {
       return res.status(400).json({
-        error: 'Texto, nota máxima e texto complementar são obrigatórios'
+        error: 'O nome do cargo é obrigatório'
       });
     }
 
@@ -68,6 +68,8 @@ exports.obterCargo = async (req, res) => {
       'SELECT * FROM cargo WHERE idCargo = $1',
       [id]
     );
+
+    //console.log(result)
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Cargo não encontrado' });

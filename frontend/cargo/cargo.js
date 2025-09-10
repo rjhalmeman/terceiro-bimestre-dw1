@@ -120,9 +120,12 @@ async function buscarCargo() {
 
 // Função para preencher formulário com dados da cargo
 function preencherFormulario(cargo) {
-    currentPersonId = cargo.idCargo;
-    searchId.value = cargo.idCargo;
-    document.getElementById('nomeCargo').value = cargo.nomeCargo || '';
+    console.log(JSON.stringify(cargo));
+
+
+    currentPersonId = cargo.idcargo;
+    searchId.value = cargo.idcargo;
+    document.getElementById('nomeCargo').value = cargo.nomecargo || '';
 
 }
 
@@ -168,7 +171,7 @@ async function salvarOperacao() {
 
     const formData = new FormData(form);
     const cargo = {
-        idcargo: searchId.value,
+        idCargo: searchId.value,
         nomeCargo: formData.get('nomeCargo'),
 
     };
@@ -234,17 +237,11 @@ function cancelarOperacao() {
 async function carregarCargos() {
     try {
         const rota = `${API_BASE_URL}/cargo`;
-        console.log("a rota " + rota);
+       // console.log("a rota " + rota);
 
-        fetch('http://localhost:3001/cargo', { method: 'GET' })
-            .then(r => {
-                console.log("teste sugerido "+[...r.headers.entries()]);
-                return r.json();
-            })
-            .then(console.log);
-
+       
         const response = await fetch(rota);
-        console.log(JSON.stringify(response));
+     //   console.log(JSON.stringify(response));
 
 
         //    debugger
@@ -272,7 +269,7 @@ function renderizarTabelaCargos(cargos) {
                             ${cargo.idcargo}
                         </button>
                     </td>
-                    <td>${cargo.nomeCargo}</td>                  
+                    <td>${cargo.nomecargo}</td>                  
                                  
                 `;
         cargosTableBody.appendChild(row);
