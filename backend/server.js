@@ -24,36 +24,28 @@ app.use(express.static(caminhoFrontend));
 
 
 app.use(cookieParser());
-
 // Middleware para permitir CORS (Cross-Origin Resource Sharing)
 // Isso é útil se você estiver fazendo requisições de um frontend que está rodando em um domínio diferente
 // ou porta do backend.
 // Em produção, você deve restringir isso para domínios específicos por segurança.
 // Aqui, estamos permitindo qualquer origem, o que é útil para desenvolvimento, mas deve ser ajustado em produção.
 app.use((req, res, next) => {
-  const allowedOrigins = [
-    'http://127.0.0.1:5500',
-    'http://localhost:5500',
-    'http://127.0.0.1:5501',
-    'http://localhost:3000',
-    'http://localhost:3001'
-  ];
-  
+  const allowedOrigins = ['http://127.0.0.1:5500','http://localhost:5500', 'http://127.0.0.1:5501', 'http://localhost:3000', 'http://localhost:3001'];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
   }
-  
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
   res.header('Access-Control-Allow-Credentials', 'true');
 
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
+    return res.sendStatus(200); // <-- responde ao preflight
   }
 
   next();
 });
+
 
 
 // Middleware para adicionar a instância do banco de dados às requisições
