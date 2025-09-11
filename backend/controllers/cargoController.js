@@ -11,7 +11,7 @@ exports.abrirCrudCargo = (req, res) => {
 
 exports.listarCargos = async (req, res) => {
   try {
-    const result = await query('SELECT * FROM cargo ORDER BY idCargo');
+    const result = await query('SELECT * FROM cargo ORDER BY id_cargo');
      console.log('Resultado do SELECT:', result.rows);//verifica se está retornando algo
     res.json(result.rows);
   } catch (error) {
@@ -24,18 +24,18 @@ exports.listarCargos = async (req, res) => {
 exports.criarCargo = async (req, res) => {
   //  console.log('Criando cargo com dados:', req.body);
   try {
-    const { idCargo, nomeCargo} = req.body;
+    const { id_cargo, nome_cargo} = req.body;
 
     // Validação básica
-    if (!nomeCargo) {
+    if (!nome_cargo) {
       return res.status(400).json({
         error: 'O nome do cargo é obrigatório'
       });
     }
 
     const result = await query(
-      'INSERT INTO cargo (idCargo, nomeCargo) VALUES ($1, $2) RETURNING *',
-      [idCargo, nomeCargo]
+      'INSERT INTO cargo (id_cargo, nome_cargo) VALUES ($1, $2) RETURNING *',
+      [id_cargo, nome_cargo]
     );
 
     res.status(201).json(result.rows[0]);
@@ -65,7 +65,7 @@ exports.obterCargo = async (req, res) => {
     }
 
     const result = await query(
-      'SELECT * FROM cargo WHERE idCargo = $1',
+      'SELECT * FROM cargo WHERE id_cargo = $1',
       [id]
     );
 
@@ -85,12 +85,12 @@ exports.obterCargo = async (req, res) => {
 exports.atualizarCargo = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const { nomeCargo} = req.body;
+    const { nome_cargo} = req.body;
 
    
     // Verifica se a cargo existe
     const existingPersonResult = await query(
-      'SELECT * FROM cargo WHERE idCargo = $1',
+      'SELECT * FROM cargo WHERE id_cargo = $1',
       [id]
     );
 
@@ -101,13 +101,13 @@ exports.atualizarCargo = async (req, res) => {
     // Constrói a query de atualização dinamicamente para campos não nulos
     const currentPerson = existingPersonResult.rows[0];
     const updatedFields = {
-      nomeCargo: nomeCargo !== undefined ? nomeCargo : currentPerson.nomeCargo     
+      nome_cargo: nome_cargo !== undefined ? nome_cargo : currentPerson.nome_cargo     
     };
 
     // Atualiza a cargo
     const updateResult = await query(
-      'UPDATE cargo SET nomeCargo = $1 WHERE idCargo = $2 RETURNING *',
-      [updatedFields.nomeCargo,  id]
+      'UPDATE cargo SET nome_cargo = $1 WHERE id_cargo = $2 RETURNING *',
+      [updatedFields.nome_cargo,  id]
     );
 
     res.json(updateResult.rows[0]);
@@ -124,7 +124,7 @@ exports.deletarCargo = async (req, res) => {
     const id = parseInt(req.params.id);
     // Verifica se a cargo existe
     const existingPersonResult = await query(
-      'SELECT * FROM cargo WHERE idCargo = $1',
+      'SELECT * FROM cargo WHERE id_cargo = $1',
       [id]
     );
 
@@ -134,7 +134,7 @@ exports.deletarCargo = async (req, res) => {
 
     // Deleta a cargo (as constraints CASCADE cuidarão das dependências)
     await query(
-      'DELETE FROM cargo WHERE idCargo = $1',
+      'DELETE FROM cargo WHERE id_cargo = $1',
       [id]
     );
 

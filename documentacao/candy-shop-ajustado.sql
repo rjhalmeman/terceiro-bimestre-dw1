@@ -6,90 +6,90 @@
 
 
 create table pessoa (
-    "cpf-pessoa" varchar(20) primary key,
-    "nome-pessoa" varchar(60),
-    "data-nascimento-pessoa" date,
-    "endereco-pessoa" varchar(150)
+    "cpf_pessoa" varchar(20) primary key,
+    "nome_pessoa" varchar(60),
+    "data_nascimento_pessoa" date,
+    "endereco_pessoa" varchar(150)
 );
 
 create table cargo (
-    "id-cargo" serial primary key,
-    "nome-cargo" varchar(45)
+    "id_cargo" serial primary key,
+    "nome_cargo" varchar(45)
 );
 
 create table funcionario (
-    "pessoa-cpf-pessoa" varchar(20) primary key references pessoa("cpf-pessoa"),
+    "pessoa_cpf_pessoa" varchar(20) primary key references pessoa("cpf_pessoa"),
     salario double precision,
-    "cargo-id-cargo" int references cargo("id-cargo"),
-    "porcentagem-comissao" double precision
+    "cargo_id_cargo" int references cargo("id_cargo"),
+    "porcentagem_comissao" double precision
 );
 
 create table cliente (
-    "pessoa-cpf-pessoa" varchar(20) primary key references pessoa("cpf-pessoa"),
-    "renda-cliente" double precision,
-    "data-cadastro-cliente" date
+    "pessoa_cpf_pessoa" varchar(20) primary key references pessoa("cpf_pessoa"),
+    "renda_cliente" double precision,
+    "data_cadastro_cliente" date
 );
 
 create table produto (
-    "id-produto" serial primary key,
-    "nome-produto" varchar(45),
-    "quantidade-estoque" int,
-    "preco-unitario" double precision
+    "id_produto" serial primary key,
+    "nome_produto" varchar(45),
+    "quantidade_estoque" int,
+    "preco_unitario" double precision
 );
 
 create table pedido (
-    "id-pedido" serial primary key,
-    "data-pedido" date,
-    "cliente-pessoa-cpf-pessoa" varchar(20) references cliente("pessoa-cpf-pessoa"),
-    "funcionario-pessoa-cpf-pessoa" varchar(20) references funcionario("pessoa-cpf-pessoa")
+    "id_pedido" serial primary key,
+    "data_pedido" date,
+    "cliente_pessoa_cpf_pessoa" varchar(20) references cliente("pessoa_cpf_pessoa"),
+    "funcionario_pessoa_cpf_pessoa" varchar(20) references funcionario("pessoa_cpf_pessoa")
 );
 
 create table pagamento (
-    "pedido-id-pedido" int primary key references pedido("id-pedido"),
-    "data-pagamento" timestamp,
-    "valor-total-pagamento" double precision
+    "pedido_id_pedido" int primary key references pedido("id_pedido"),
+    "data_pagamento" timestamp,
+    "valor_total_pagamento" double precision
 );
 
-create table "forma-pagamento" (
-    "id-forma-pagamento" serial primary key,
-    "nome-forma-pagamento" varchar(100)
+create table "forma_pagamento" (
+    "id_forma_pagamento" serial primary key,
+    "nome_forma_pagamento" varchar(100)
 );
 
 -- TABELAS RELACIONAIS
 
-create table "pedido-has-produto" (
-    "produto-id-produto" int references produto("id-produto"),
-    "pedido-id-pedido" int references pedido("id-pedido"),
+create table "pedido_has_produto" (
+    "produto_id_produto" int references produto("id_produto"),
+    "pedido_id_pedido" int references pedido("id_pedido"),
     quantidade int,
-    "preco-unitario" double precision,
-    primary key ("produto-id-produto", "pedido-id-pedido")
+    "preco_unitario" double precision,
+    primary key ("produto_id_produto", "pedido_id_pedido")
 );
 
-create table "pagamento-has-forma-pagamento" (
-    "pagamento-id-pedido" int references pagamento("pedido-id-pedido"),
-    "forma-pagamento-id-forma-pagamento" int references "forma-pagamento"("id-forma-pagamento"),
-    "valor-pago" double precision,
-    primary key ("pagamento-id-pedido", "forma-pagamento-id-forma-pagamento")
+create table "pagamento_has_forma_pagamento" (
+    "pagamento_id_pedido" int references pagamento("pedido_id_pedido"),
+    "forma_pagamento_id_forma_pagamento" int references "forma_pagamento"("id_forma_pagamento"),
+    "valor_pago" double precision,
+    primary key ("pagamento_id_pedido", "forma_pagamento_id_forma_pagamento")
 );
 
 
 
 
 -- Pessoa (10 registros)
-insert into pessoa ("cpf-pessoa", "nome-pessoa", "data-nascimento-pessoa", "endereco-pessoa") values
-('11111111111', 'João Silva', '1990-01-10', 'algum lugar'),
-('22222222222', 'Maria Souza', '1985-02-15', 'lá longe, 1234'),
-('33333333333', 'Carlos Pereira', '1992-03-20', 'Rua que Judas perdeu as botas, 234'),
-('44444444444', 'Ana Lima', '1995-04-25', 'Alameda do medo, 4534 apto 13'),
-('55555555555', 'Lucas Mendes', '1988-05-30', 'Rua sexta-feira, 13 - apto 666'),
-('66666666666', 'Fernanda Costa', '1993-06-05', 'muito longe, 243'),
-('77777777777', 'Ricardo Alves', '1987-07-10', 'far far faraway, 34'),
-('88888888888', 'Patrícia Gomes', '1994-08-15', 'acolá, 54'),
-('99999999999', 'Marcos Rocha', '1991-09-20', 'kaxa prego - ilha de itaparica'),
-('10101010101', 'Juliana Dias', '1989-10-25', 'lins, 352');
+insert into pessoa ("cpf_pessoa", "nome_pessoa", "data_nascimento_pessoa", "endereco_pessoa") values
+('11111111111', 'João Silva', '1990_01_10', 'algum lugar'),
+('22222222222', 'Maria Souza', '1985_02_15', 'lá longe, 1234'),
+('33333333333', 'Carlos Pereira', '1992_03_20', 'Rua que Judas perdeu as botas, 234'),
+('44444444444', 'Ana Lima', '1995_04_25', 'Alameda do medo, 4534 apto 13'),
+('55555555555', 'Lucas Mendes', '1988_05_30', 'Rua sexta_feira, 13 _ apto 666'),
+('66666666666', 'Fernanda Costa', '1993_06_05', 'muito longe, 243'),
+('77777777777', 'Ricardo Alves', '1987_07_10', 'far far faraway, 34'),
+('88888888888', 'Patrícia Gomes', '1994_08_15', 'acolá, 54'),
+('99999999999', 'Marcos Rocha', '1991_09_20', 'kaxa prego _ ilha de itaparica'),
+('10101010101', 'Juliana Dias', '1989_10_25', 'lins, 352');
 
 -- Cargo (10 registros)
-insert into cargo ("nome-cargo") values
+insert into cargo ("nome_cargo") values
 ('Vendedor'),
 ('Gerente'),
 ('Caixa'),
@@ -102,7 +102,7 @@ insert into cargo ("nome-cargo") values
 ('Diretor');
 
 -- Funcionario (10 registros)
-insert into funcionario ("pessoa-cpf-pessoa", salario, "cargo-id-cargo", "porcentagem-comissao") values
+insert into funcionario ("pessoa_cpf_pessoa", salario, "cargo_id_cargo", "porcentagem_comissao") values
 ('11111111111', 2000.00, 1, 5),
 ('22222222222', 3000.00, 2, 10),
 ('33333333333', 1500.00, 3, 3),
@@ -115,20 +115,20 @@ insert into funcionario ("pessoa-cpf-pessoa", salario, "cargo-id-cargo", "porcen
 ('10101010101', 5000.00, 10, 15);
 
 -- Cliente (10 registros)
-insert into cliente ("pessoa-cpf-pessoa", "renda-cliente", "data-cadastro-cliente") values
-('11111111111', 2500.00, '2024-01-01'),
-('22222222222', 3200.00, '2024-01-02'),
-('33333333333', 1800.00, '2024-01-03'),
-('44444444444', 4000.00, '2024-01-04'),
-('55555555555', 2100.00, '2024-01-05'),
-('66666666666', 3500.00, '2024-01-06'),
-('77777777777', 2700.00, '2024-01-07'),
-('88888888888', 5000.00, '2024-01-08'),
-('99999999999', 3800.00, '2024-01-09'),
-('10101010101', 4500.00, '2024-01-10');
+insert into cliente ("pessoa_cpf_pessoa", "renda_cliente", "data_cadastro_cliente") values
+('11111111111', 2500.00, '2024_01_01'),
+('22222222222', 3200.00, '2024_01_02'),
+('33333333333', 1800.00, '2024_01_03'),
+('44444444444', 4000.00, '2024_01_04'),
+('55555555555', 2100.00, '2024_01_05'),
+('66666666666', 3500.00, '2024_01_06'),
+('77777777777', 2700.00, '2024_01_07'),
+('88888888888', 5000.00, '2024_01_08'),
+('99999999999', 3800.00, '2024_01_09'),
+('10101010101', 4500.00, '2024_01_10');
 
 -- Produto (10 registros)
-insert into produto ("nome-produto", "quantidade-estoque", "preco-unitario") values
+insert into produto ("nome_produto", "quantidade_estoque", "preco_unitario") values
 ('Chocolate', 100, 5.50),
 ('Bala', 200, 0.50),
 ('Pirulito', 150, 1.00),
@@ -141,33 +141,33 @@ insert into produto ("nome-produto", "quantidade-estoque", "preco-unitario") val
 ('Sorvete', 20, 10.00);
 
 -- Pedido (10 registros)
-insert into pedido ("data-pedido", "cliente-pessoa-cpf-pessoa", "funcionario-pessoa-cpf-pessoa") values
-('2024-02-01', '11111111111', '22222222222'),
-('2024-02-02', '33333333333', '44444444444'),
-('2024-02-03', '55555555555', '66666666666'),
-('2024-02-04', '77777777777', '88888888888'),
-('2024-02-05', '99999999999', '10101010101'),
-('2024-02-06', '22222222222', '11111111111'),
-('2024-02-07', '44444444444', '33333333333'),
-('2024-02-08', '66666666666', '55555555555'),
-('2024-02-09', '88888888888', '77777777777'),
-('2024-02-10', '10101010101', '99999999999');
+insert into pedido ("data_pedido", "cliente_pessoa_cpf_pessoa", "funcionario_pessoa_cpf_pessoa") values
+('2024_02_01', '11111111111', '22222222222'),
+('2024_02_02', '33333333333', '44444444444'),
+('2024_02_03', '55555555555', '66666666666'),
+('2024_02_04', '77777777777', '88888888888'),
+('2024_02_05', '99999999999', '10101010101'),
+('2024_02_06', '22222222222', '11111111111'),
+('2024_02_07', '44444444444', '33333333333'),
+('2024_02_08', '66666666666', '55555555555'),
+('2024_02_09', '88888888888', '77777777777'),
+('2024_02_10', '10101010101', '99999999999');
 
 -- Pagamento (10 registros)
-insert into pagamento ("pedido-id-pedido", "data-pagamento", "valor-total-pagamento") values
-(1, '2024-02-01 10:00:00', 50.00),
-(2, '2024-02-02 11:00:00', 30.00),
-(3, '2024-02-03 12:00:00', 20.00),
-(4, '2024-02-04 13:00:00', 70.00),
-(5, '2024-02-05 14:00:00', 100.00),
-(6, '2024-02-06 15:00:00', 80.00),
-(7, '2024-02-07 16:00:00', 25.00),
-(8, '2024-02-08 17:00:00', 45.00),
-(9, '2024-02-09 18:00:00', 60.00),
-(10, '2024-02-10 19:00:00', 90.00);
+insert into pagamento ("pedido_id_pedido", "data_pagamento", "valor_total_pagamento") values
+(1, '2024_02_01 10:00:00', 50.00),
+(2, '2024_02_02 11:00:00', 30.00),
+(3, '2024_02_03 12:00:00', 20.00),
+(4, '2024_02_04 13:00:00', 70.00),
+(5, '2024_02_05 14:00:00', 100.00),
+(6, '2024_02_06 15:00:00', 80.00),
+(7, '2024_02_07 16:00:00', 25.00),
+(8, '2024_02_08 17:00:00', 45.00),
+(9, '2024_02_09 18:00:00', 60.00),
+(10, '2024_02_10 19:00:00', 90.00);
 
 -- FormaDePagamento (10 registros)
-insert into "forma-pagamento" ("nome-forma-pagamento") values
+insert into "forma_pagamento" ("nome_forma_pagamento") values
 ('Dinheiro'),
 ('Cartão de Crédito'),
 ('Cartão de Débito'),
@@ -180,7 +180,7 @@ insert into "forma-pagamento" ("nome-forma-pagamento") values
 ('Gift Card');
 
 -- PedidoHasProduto (5 registros)
-insert into "pedido-has-produto" ("produto-id-produto", "pedido-id-pedido", quantidade, "preco-unitario") values
+insert into "pedido_has_produto" ("produto_id_produto", "pedido_id_pedido", quantidade, "preco_unitario") values
 (1, 1, 2, 5.50),
 (2, 2, 10, 0.50),
 (3, 3, 5, 1.00),
@@ -188,7 +188,7 @@ insert into "pedido-has-produto" ("produto-id-produto", "pedido-id-pedido", quan
 (5, 5, 2, 7.00);
 
 -- PagamentoHasFormaPagamento (5 registros)
-insert into "pagamento-has-forma-pagamento" ("pagamento-id-pedido", "forma-pagamento-id-forma-pagamento", "valor-pago") values
+insert into "pagamento_has_forma_pagamento" ("pagamento_id_pedido", "forma_pagamento_id_forma_pagamento", "valor_pago") values
 (1, 1, 20.00),
 (2, 2, 30.00),
 (3, 3, 15.00),
