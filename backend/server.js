@@ -101,6 +101,9 @@ app.use('/menu', menuRoutes);
 
 const cargoRoutes = require('./routes/cargoRoutes');
 app.use('/cargo', cargoRoutes);
+
+const produtoRoutes = require('./routes/produtoRoutes');
+app.use('/produto', produtoRoutes);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Rota padrão
