@@ -123,9 +123,9 @@ function preencherFormulario(cargo) {
     console.log(JSON.stringify(cargo));
 
 
-    currentPersonId = cargo.idcargo;
-    searchId.value = cargo.idcargo;
-    document.getElementById('nomeCargo').value = cargo.nomecargo || '';
+    currentPersonId = cargo.id_cargo;
+    searchId.value = cargo.id_cargo;
+    document.getElementById('nome_cargo').value = cargo.nome_cargo || '';
 
 }
 
@@ -141,7 +141,7 @@ async function incluirCargo() {
     bloquearCampos(true);
 
     mostrarBotoes(false, false, false, false, true, true); // mostrarBotoes(btBuscar, btIncluir, btAlterar, btExcluir, btSalvar, btCancelar)
-    document.getElementById('nomeCargo').focus();
+    document.getElementById('nome_cargo').focus();
     operacao = 'incluir';
     // console.log('fim nova cargo - currentPersonId: ' + currentPersonId);
 }
@@ -151,7 +151,7 @@ async function alterarCargo() {
     mostrarMensagem('Digite os dados!', 'success');
     bloquearCampos(true);
     mostrarBotoes(false, false, false, false, true, true);// mostrarBotoes(btBuscar, btIncluir, btAlterar, btExcluir, btSalvar, btCancelar)
-    document.getElementById('nomeCargo').focus();
+    document.getElementById('nome_cargo').focus();
     operacao = 'alterar';
 }
 
@@ -171,8 +171,8 @@ async function salvarOperacao() {
 
     const formData = new FormData(form);
     const cargo = {
-        idCargo: searchId.value,
-        nomeCargo: formData.get('nomeCargo'),
+        id_cargo: searchId.value,
+        nome_cargo: formData.get('nome_cargo'),
 
     };
     let response = null;
@@ -265,11 +265,11 @@ function renderizarTabelaCargos(cargos) {
         const row = document.createElement('tr');
         row.innerHTML = `
                     <td>
-                        <button class="btn-id" onclick="selecionarCargo(${cargo.idcargo})">
-                            ${cargo.idcargo}
+                        <button class="btn-id" onclick="selecionarCargo(${cargo.id_cargo})">
+                            ${cargo.id_cargo}
                         </button>
                     </td>
-                    <td>${cargo.nomecargo}</td>                  
+                    <td>${cargo.nome_cargo}</td>                  
                                  
                 `;
         cargosTableBody.appendChild(row);
