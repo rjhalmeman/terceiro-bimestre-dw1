@@ -173,7 +173,8 @@ async function salvarOperacao() {
     const produto = {
         id_produto: searchId.value,
         nome_produto: formData.get('nome_produto'),
-
+        quantidade_estoque: formData.get('quantidade_estoque'),
+        preco_unitario: formData.get('preco_unitario'),
     };
     let response = null;
     try {
