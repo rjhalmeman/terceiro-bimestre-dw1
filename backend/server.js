@@ -77,11 +77,12 @@ app.use((err, req, res, next) => {
 const menuRoutes = require('./routes/menuRoutes');
 app.use('/menu', menuRoutes);
 
+
+
 // const pessoaRoutes = require('./routes/pessoaRoutes');
 // app.use('/pessoa', pessoaRoutes);
 
-// const questaoRoutes = require('./routes/questaoRoutes');
-// app.use('/questao', questaoRoutes);
+
 
 // const professorRoutes = require('./routes/professorRoutes');
 // app.use('/professor', professorRoutes);
@@ -101,6 +102,9 @@ app.use('/menu', menuRoutes);
 
 const cargoRoutes = require('./routes/cargoRoutes');
 app.use('/cargo', cargoRoutes);
+
+const forma_pagamentoRoutes = require('./routes/forma_pagamentoRoutes');
+app.use('/forma_pagamento', forma_pagamentoRoutes);
 
 const produtoRoutes = require('./routes/produtoRoutes');
 app.use('/produto', produtoRoutes);
