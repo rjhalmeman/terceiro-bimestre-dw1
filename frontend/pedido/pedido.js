@@ -18,7 +18,7 @@ const messageContainer = document.getElementById('messageContainer');
 
 // Carregar lista de pedidos ao inicializar
 document.addEventListener('DOMContentLoaded', () => {
-    carregarPedidos();
+   // carregarPedidos();
 });
 
 // Event Listeners
@@ -230,7 +230,7 @@ async function salvarOperacao() {
             const novaPedido = await response.json();
             mostrarMensagem('Operação ' + operacao + ' realizada com sucesso!', 'success');
             limparFormulario();
-            carregarPedidos();
+          //  carregarPedidos();
 
         } else if (operacao !== 'excluir') {
             const error = await response.json();
@@ -238,7 +238,7 @@ async function salvarOperacao() {
         } else {
             mostrarMensagem('Pedido excluído com sucesso!', 'success');
             limparFormulario();
-            carregarPedidos();
+          //  carregarPedidos();
         }
     } catch (error) {
         console.error('Erro:', error);
@@ -260,7 +260,7 @@ function cancelarOperacao() {
 }
 
 function renderizerTabelaItensPedido(itens) { //itensDoPedido
-    console.log('Renderizando itens do pedido:', itens);
+   // console.log('Renderizando itens do pedido:', itens);
     const itensTableBody = document.getElementById('itensTableBody');
     itensTableBody.innerHTML = '';
 
@@ -268,13 +268,6 @@ function renderizerTabelaItensPedido(itens) { //itensDoPedido
     if (typeof itens === 'object' && !Array.isArray(itens)) {
         itens = [itens]; // Wrap the object in an array        
     }
-
-    // // Ensure itens is now an array
-    // if (!Array.isArray(itens)) {
-    //     console.error('Expected itens to be an array or object, but got:', itens);
-    //     mostrarMensagem('Erro ao renderizar itens do pedido', 'error');
-    //     return;
-    // }
 
     // Iterate over the array and render rows
     itens.forEach(item => {
