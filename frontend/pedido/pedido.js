@@ -102,6 +102,12 @@ async function buscarPedido() {
             mostrarBotoes(true, false, true, true, false, false);// mostrarBotoes(btBuscar, btIncluir, btAlterar, btExcluir, btSalvar, btCancelar)
             mostrarMensagem('Pedido encontrado!', 'success');
 
+            // pedido_has_produto
+            // Renderizar itens do pedido na tabela de itens    
+            
+            renderizerTabelaItensPedido(pedido.itensDoPedido || []);
+
+
         } else if (response.status === 404) {
             limparFormulario();
             searchId.value = id;
@@ -259,6 +265,23 @@ async function carregarPedidos() {
         mostrarMensagem('Erro ao carregar lista de pedidos', 'error');
     }
 }
+
+function renderizerTabelaItensPedido(itens) { //itensDoPedido
+    const itensTableBody = document.getElementById('itensTableBody');
+    itensTableBody.innerHTML = '';
+
+    itens.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+                    <td>${item.id_item_pedido}</td>
+                    <td>${item.produto_id_produto}</td>
+                    <td>${item.quantidade}</td>
+                    <td>${item.preco_unitario}</td>                  
+                    <td>${item.pedido_id_pedido}</td>                  
+                `;
+        itensTableBody.appendChild(row);
+    });
+}   
 
 // Função para renderizar tabela de pedidos
 function renderizarTabelaPedidos(pedidos) {

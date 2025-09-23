@@ -111,6 +111,12 @@ app.use('/produto', produtoRoutes);
 
 const pedidoRoutes = require('./routes/pedidoRoutes');
 app.use('/pedido', pedidoRoutes);
+
+const pedido_has_produtoRoutes = require('./routes/pedido_has_produtoRoutes');
+app.use('/pedido_has_produto', pedido_has_produtoRoutes);
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Rota padrão
