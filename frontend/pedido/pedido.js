@@ -93,7 +93,7 @@ async function buscarPedido() {
     searchId.focus();
     try {
         const response = await fetch(`${API_BASE_URL}/pedido/${id}`);
-        console.log(JSON.stringify(response));
+        //    console.log(JSON.stringify(response));
 
         if (response.ok) {
             const pedido = await response.json();
@@ -104,8 +104,13 @@ async function buscarPedido() {
 
             // pedido_has_produto
             // Renderizar itens do pedido na tabela de itens    
-            
-            renderizerTabelaItensPedido(pedido.itensDoPedido || []);
+
+            const responseItens = await fetch(`${API_BASE_URL}/pedido_has_produto/${pedido.id_pedido}`);
+            if (responseItens.ok) {
+                const itensDoPedido = await responseItens.json();
+                //console.log('Itens do pedido:', itensDoPedido);
+                renderizerTabelaItensPedido(itensDoPedido || []);
+            }
 
 
         } else if (response.status === 404) {
@@ -124,17 +129,29 @@ async function buscarPedido() {
     }
 }
 
+function formatarDataParaInputDate(data) {
+    const dataObj = new Date(data); // Converte a data para um objeto Date
+    const ano = dataObj.getFullYear();
+    const mes = String(dataObj.getMonth() + 1).padStart(2, '0'); // Meses começam do zero, então +1
+    const dia = String(dataObj.getDate()).padStart(2, '0'); // Garante que o dia tenha 2 dígitos
+    return `${ano}-${mes}-${dia}`; // Retorna a data no formato yyyy-mm-dd
+}
+
 // Função para preencher formulário com dados da pedido
 function preencherFormulario(pedido) {
-    console.log(JSON.stringify(pedido));
-    console.log('data pedido: ' + pedido.data_pedido);
-    console.log('data pedido formatar: ' + formatarData(pedido.data_pedido));
+    //  console.log(JSON.stringify(pedido));
+    //  console.log('data pedido: ' + pedido.data_pedido);
+    //  console.log('data pedido formatar: ' + formatarDataParaInputDate(pedido.data_pedido));
 
     currentPersonId = pedido.id_pedido;
     searchId.value = pedido.id_pedido;
-    document.getElementById('data_pedido').value = formatarData(pedido.data_pedido) || '2000-01-01';
+    document.getElementById('data_pedido').value = formatarDataParaInputDate(pedido.data_pedido);
+
     document.getElementById('cliente_pessoa_cpf_pessoa').value = pedido.cliente_pessoa_cpf_pessoa || 0;
     document.getElementById('funcionario_pessoa_cpf_pessoa').value = pedido.funcionario_pessoa_cpf_pessoa || 0;
+
+
+
 }
 
 
@@ -242,46 +259,65 @@ function cancelarOperacao() {
     mostrarMensagem('Operação cancelada', 'info');
 }
 
+function renderizerTabelaItensPedido(itens) { //itensDoPedido
+    console.log('Renderizando itens do pedido:', itens);
+    const itensTableBody = document.getElementById('itensTableBody');
+    itensTableBody.innerHTML = '';
+
+    // Check if itens is a single object and wrap it in an array
+    if (typeof itens === 'object' && !Array.isArray(itens)) {
+        itens = [itens]; // Wrap the object in an array        
+    }
+
+    // // Ensure itens is now an array
+    // if (!Array.isArray(itens)) {
+    //     console.error('Expected itens to be an array or object, but got:', itens);
+    //     mostrarMensagem('Erro ao renderizar itens do pedido', 'error');
+    //     return;
+    // }
+
+    // Iterate over the array and render rows
+    itens.forEach(item => {
+        console.log('Item do pedido:', item);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+                    <td>${item.pedido_id_pedido}</td>                  
+                    <td>${item.produto_id_produto}</td>
+                    <td>${item.quantidade}</td>
+                    <td>${item.preco_unitario}</td>                  
+                `;
+        itensTableBody.appendChild(row);
+    });
+}
+
 // Função para carregar lista de pedidos
 async function carregarPedidos() {
     try {
         const rota = `${API_BASE_URL}/pedido`;
-       // console.log("a rota " + rota);
+        // console.log("a rota " + rota);
 
-       
+
         const response = await fetch(rota);
-     //   console.log(JSON.stringify(response));
+        //   console.log(JSON.stringify(response));
 
 
         //    debugger
         if (response.ok) {
             const pedidos = await response.json();
-            renderizarTabelaPedidos(pedidos);
-        } else {
-            throw new Error('Erro ao carregar pedidos');
-        }
+
+            // Fetch itens do pedido for the first pedido
+            if (pedidos.length > 0) {
+                renderizarTabelaPedidos(pedidos);
+            } else {
+                throw new Error('Erro ao carregar itens do pedido');
+            }
+        }      
+        
     } catch (error) {
         console.error('Erro:', error);
         mostrarMensagem('Erro ao carregar lista de pedidos', 'error');
     }
 }
-
-function renderizerTabelaItensPedido(itens) { //itensDoPedido
-    const itensTableBody = document.getElementById('itensTableBody');
-    itensTableBody.innerHTML = '';
-
-    itens.forEach(item => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-                    <td>${item.id_item_pedido}</td>
-                    <td>${item.produto_id_produto}</td>
-                    <td>${item.quantidade}</td>
-                    <td>${item.preco_unitario}</td>                  
-                    <td>${item.pedido_id_pedido}</td>                  
-                `;
-        itensTableBody.appendChild(row);
-    });
-}   
 
 // Função para renderizar tabela de pedidos
 function renderizarTabelaPedidos(pedidos) {

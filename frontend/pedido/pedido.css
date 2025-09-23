@@ -91,7 +91,6 @@ section h2 {
     flex: 1;
     max-width: 200px;
 }
-
 fieldset {
     border: 1px solid #6fa06f;
     border-radius: 8px;
@@ -108,8 +107,10 @@ fieldset legend {
 }
 
 .form-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem; /* Espaço entre os campos */
     margin-bottom: 1rem;
-   
 }
 
 .form-group label {
@@ -121,7 +122,7 @@ fieldset legend {
 
 .form-group input,
 .form-group select {
-    width: 100%;
+    width: 30%; /* Ajuste a largura dos inputs para caberem na mesma linha */
     padding: 0.8rem;
     border: 2px solid #c0e0c0;
     border-radius: 6px;
@@ -137,7 +138,6 @@ fieldset legend {
     box-shadow: 0 0 0 3px rgba(127, 255, 212, 0.3);
     background: #f9fffc;
 }
-
 /* Button styles */
 .button-group {
     display: flex;

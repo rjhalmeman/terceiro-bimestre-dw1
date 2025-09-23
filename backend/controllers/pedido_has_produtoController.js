@@ -59,7 +59,7 @@ exports.obterPedido_has_produto = async (req, res) => {
     }
 
     const result = await query(
-      'SELECT * FROM pedido_has_produto WHERE id_pedido_has_produto = $1',
+      'SELECT * FROM pedido_has_produto WHERE pedido_id_pedido = $1',
       [id]
     );
 
@@ -69,7 +69,7 @@ exports.obterPedido_has_produto = async (req, res) => {
       return res.status(404).json({ error: 'Pedido_has_produto não encontrado' });
     }
 
-    res.json(result.rows[0]);
+    res.json(result.rows); //retorna todos os itens do pedido
   } catch (error) {
     console.error('Erro ao obter pedido_has_produto:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
