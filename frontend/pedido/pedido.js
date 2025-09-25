@@ -18,7 +18,7 @@ const messageContainer = document.getElementById('messageContainer');
 
 // Carregar lista de pedidos ao inicializar
 document.addEventListener('DOMContentLoaded', () => {
-   // carregarPedidos();
+    // carregarPedidos();
 });
 
 // Event Listeners
@@ -89,43 +89,52 @@ async function buscarPedido() {
         return;
     }
     bloquearCampos(false);
-    //focus no campo searchId
     searchId.focus();
+
     try {
         const response = await fetch(`${API_BASE_URL}/pedido/${id}`);
-        //    console.log(JSON.stringify(response));
 
         if (response.ok) {
             const pedido = await response.json();
             preencherFormulario(pedido);
-
-            mostrarBotoes(true, false, true, true, false, false);// mostrarBotoes(btBuscar, btIncluir, btAlterar, btExcluir, btSalvar, btCancelar)
+            mostrarBotoes(true, false, true, true, false, false);
             mostrarMensagem('Pedido encontrado!', 'success');
 
-            // pedido_has_produto
-            // Renderizar itens do pedido na tabela de itens    
-
-            const responseItens = await fetch(`${API_BASE_URL}/pedido_has_produto/${pedido.id_pedido}`);
-            if (responseItens.ok) {
-                const itensDoPedido = await responseItens.json();
-                //console.log('Itens do pedido:', itensDoPedido);
-                renderizerTabelaItensPedido(itensDoPedido || []);
-            }
-
+            // Fazer a requisição dos itens separadamente e carregar na tabela
+            await carregarItensDoPedido(pedido.id_pedido);
 
         } else if (response.status === 404) {
             limparFormulario();
             searchId.value = id;
-            mostrarBotoes(true, true, false, false, false, false); //mostrarBotoes(btBuscar, btIncluir, btAlterar, btExcluir, btSalvar, btCancelar)
+            mostrarBotoes(true, true, false, false, false, false);
             mostrarMensagem('Pedido não encontrado. Você pode incluir um novo pedido.', 'info');
-            bloquearCampos(false);//bloqueia a pk e libera os demais campos
-            //enviar o foco para o campo de nome
+            bloquearCampos(false);
         } else {
             throw new Error('Erro ao buscar pedido');
         }
     } catch (error) {
         console.error('Erro:', error);
         mostrarMensagem('Erro ao buscar pedido', 'error');
+    }
+}
+
+// Função para carregar itens
+async function carregarItensDoPedido(pedidoId) {
+    try {
+        // debugger;
+        const responseItens = await fetch(`${API_BASE_URL}/pedido_has_produto/${pedidoId}`);
+
+        if (responseItens.ok) {
+            const itensDoPedido = await responseItens.json();
+            renderizerTabelaItensPedido(itensDoPedido || []);
+        } else if (responseItens.status === 404) {
+            // Silencia completamente o 404 - sem console.log
+            const itensTableBody = document.getElementById('itensTableBody');
+            itensTableBody.innerHTML = '';
+        }
+        // Ignora outros status silenciosamente
+    } catch (error) {
+        // Ignora erros de rede silenciosamente para itens
     }
 }
 
@@ -230,7 +239,7 @@ async function salvarOperacao() {
             const novaPedido = await response.json();
             mostrarMensagem('Operação ' + operacao + ' realizada com sucesso!', 'success');
             limparFormulario();
-          //  carregarPedidos();
+            //  carregarPedidos();
 
         } else if (operacao !== 'excluir') {
             const error = await response.json();
@@ -238,7 +247,7 @@ async function salvarOperacao() {
         } else {
             mostrarMensagem('Pedido excluído com sucesso!', 'success');
             limparFormulario();
-          //  carregarPedidos();
+            //  carregarPedidos();
         }
     } catch (error) {
         console.error('Erro:', error);
@@ -259,8 +268,7 @@ function cancelarOperacao() {
     mostrarMensagem('Operação cancelada', 'info');
 }
 
-function renderizerTabelaItensPedido(itens) { //itensDoPedido
-   // console.log('Renderizando itens do pedido:', itens);
+function renderizerTabelaItensPedido(itens) {
     const itensTableBody = document.getElementById('itensTableBody');
     itensTableBody.innerHTML = '';
 
@@ -270,18 +278,67 @@ function renderizerTabelaItensPedido(itens) { //itensDoPedido
     }
 
     // Iterate over the array and render rows
-    itens.forEach(item => {
-        console.log('Item do pedido:', item);
+    itens.forEach((item, index) => {
         const row = document.createElement('tr');
+        let subTotal = item.quantidade * item.preco_unitario;
+        subTotal = subTotal.toFixed(2).replace('.', ',');
+
         row.innerHTML = `
-                    <td>${item.pedido_id_pedido}</td>                  
-                    <td>${item.produto_id_produto}</td>
-                    <td>${item.quantidade}</td>
-                    <td>${item.preco_unitario}</td>                  
-                `;
+            <td>${item.pedido_id_pedido}</td>                  
+            <td>${item.produto_id_produto}</td>
+            <td>
+                <input type="number" class="quantidade-input" data-index="${index}" 
+                       value="${item.quantidade}" min="1">
+            </td>
+            <td>
+                <input type="number" class="preco-input" data-index="${index}" 
+                       value="${item.preco_unitario}" min="0" step="0.01">
+            </td>                               
+            <td class="subtotal-cell">${subTotal}</td>                  
+        `;
         itensTableBody.appendChild(row);
     });
+
+    // Adicionar event listeners para atualizar o subtotal
+    adicionarEventListenersSubtotal();
 }
+
+function adicionarEventListenersSubtotal() {
+    const quantidadeInputs = document.querySelectorAll('.quantidade-input');
+    const precoInputs = document.querySelectorAll('.preco-input');
+
+    // Adicionar event listeners para os inputs de quantidade
+    quantidadeInputs.forEach(input => {
+        input.addEventListener('input', atualizarSubtotal);
+        input.addEventListener('change', atualizarSubtotal);
+    });
+
+    // Adicionar event listeners para os inputs de preço
+    precoInputs.forEach(input => {
+        input.addEventListener('input', atualizarSubtotal);
+        input.addEventListener('change', atualizarSubtotal);
+    });
+}
+
+function atualizarSubtotal(event) {
+    const index = event.target.getAttribute('data-index');
+    const row = event.target.closest('tr');
+
+    const quantidadeInput = row.querySelector('.quantidade-input');
+    const precoInput = row.querySelector('.preco-input');
+    const subtotalCell = row.querySelector('.subtotal-cell');
+
+    // Obter valores atuais (usando parseFloat e fallback para 0 se for inválido)
+    const quantidade = parseFloat(quantidadeInput.value) || 0;
+    const preco = parseFloat(precoInput.value) || 0;
+
+    // Calcular novo subtotal
+    const novoSubtotal = quantidade * preco;
+
+    // Atualizar a célula do subtotal
+    subtotalCell.textContent = novoSubtotal.toFixed(2).replace('.', ',');
+}
+
 
 // Função para carregar lista de pedidos
 async function carregarPedidos() {
@@ -304,8 +361,8 @@ async function carregarPedidos() {
             } else {
                 throw new Error('Erro ao carregar itens do pedido');
             }
-        }      
-        
+        }
+
     } catch (error) {
         console.error('Erro:', error);
         mostrarMensagem('Erro ao carregar lista de pedidos', 'error');
