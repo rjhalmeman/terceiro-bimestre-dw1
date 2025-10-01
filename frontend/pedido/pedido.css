@@ -11,7 +11,6 @@ body {
     color: #2d4a2d;
     line-height: 1.0;
     min-height: 100vh;
-    
 }
 
 /* Header */
@@ -32,7 +31,6 @@ header h1 {
 /* Main container */
 main {
     max-width: 1200px;
-   
     margin: 2rem auto;
     padding: 0 2rem;
     display: grid;
@@ -46,10 +44,6 @@ section {
     padding: 2rem;
     box-shadow: 0 4px 15px rgba(45, 74, 45, 0.1);
     border: 1px solid #e0f2e0;
-    
-    
-    
-    /* background-color: rgb(220, 252, 241); */
 }
 
 section h2 {
@@ -402,4 +396,34 @@ footer {
     fieldset {
         padding: 1rem;
     }
+}
+
+/*
+ * Contêiner para o input e o botão de busca dentro da tabela.
+ * Isso resolve o problema de alinhamento do ID do produto.
+ */
+.produto-group {
+    display: flex;
+    align-items: center; /* Alinha verticalmente os itens no centro */
+    gap: 8px; /* Espaço entre o input e o botão */
+    height: 100%;
+}
+
+.produto-group input {
+    /* Ocupa o espaço restante */
+    flex-grow: 1; 
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    height: 38px;
+    box-sizing: border-box; /* Garante que o padding e a borda sejam incluídos na altura */
+}
+
+.produto-group .btn-buscar-pequeno {
+    flex-shrink: 0; /* Impede que o botão encolha */
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    height: 38px; /* Mantém a mesma altura do input */
+    min-width: auto;
 }

@@ -93,7 +93,7 @@ async function buscarPedido() {
 
     try {
         const response = await fetch(`${API_BASE_URL}/pedido/${id}`);
-
+        console.log('Response status:', response.status);
         if (response.ok) {
             const pedido = await response.json();
             preencherFormulario(pedido);
@@ -286,6 +286,7 @@ function renderizerTabelaItensPedido(itens) {
         row.innerHTML = `
             <td>${item.pedido_id_pedido}</td>                  
             <td>${item.produto_id_produto}</td>
+            <td>${item.nome_produto}</td>
             <td>
                 <input type="number" class="quantidade-input" data-index="${index}" 
                        value="${item.quantidade}" min="1">
@@ -294,7 +295,10 @@ function renderizerTabelaItensPedido(itens) {
                 <input type="number" class="preco-input" data-index="${index}" 
                        value="${item.preco_unitario}" min="0" step="0.01">
             </td>                               
-            <td class="subtotal-cell">${subTotal}</td>                  
+            <td class="subtotal-cell">${subTotal}</td>      
+            <td>
+                 <button class="btn-secondary btn-small" onclick="btnExcluirItem(this)">Excluir</button>
+            </td>                
         `;
         itensTableBody.appendChild(row);
     });
@@ -394,4 +398,79 @@ function renderizarTabelaPedidos(pedidos) {
 async function selecionarPedido(id) {
     searchId.value = id;
     await buscarPedido();
+}
+
+
+// Função para adicionar uma nova linha vazia para um item na tabela de itens do pedido.
+function adicionarItem() {
+    const itensTableBody = document.getElementById('itensTableBody');
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>
+            <input type="number" class="pedido-id-input" value="${searchId.value}" disabled>
+        </td>                  
+        <td class="produto-group">
+            <input type="number" class="produto-id-input">
+            <button class="btn-secondary btn-small" onclick="buscarProdutoPorId(this)">Buscar</button>
+        </td>
+        <td>
+            <input type="text" class="produto-nome-input" id="produto-nome-input" value="" readonly>
+        </td>
+        <td>
+            <input type="number" class="quantidade-input" value="1" min="1">
+        </td>
+        <td>
+            <input type="number" class="preco-input" value="0.00" min="0" step="0.01">
+        </td>                               
+        <td class="subtotal-cell">0,00</td>  
+        <td>
+            <button class="btn-secondary btn-small" onclick="btnSalvarItem(this)">Salvar</button>
+        </td> 
+               
+    `;
+    itensTableBody.appendChild(row);
+
+    adicionarEventListenersSubtotal();
+}
+
+
+// Função para buscar o produto por ID no banco de dados.
+async function buscarProdutoPorId(button) {
+    const row = button.closest('tr');
+    const produtoIdInput = row.querySelector('.produto-id-input');
+    const produtoId = produtoIdInput.value;
+
+    if (!produtoId) {
+        mostrarMensagem('Por favor, insira um ID de produto.', 'warning');
+        return;
+    }
+
+    try {
+        //const response = await fetch(`${API_BASE_URL}/pedido/${id}`);
+        const response = await fetch(`${API_BASE_URL}/produto/${produtoId}`);
+        if (!response.ok) {
+            throw new Error('Produto não encontrado.');
+        }
+
+        const produto = await response.json();
+
+        // Preenche os campos da linha com os dados do produto
+
+
+        const precoInput = row.querySelector('.preco-input');
+        precoInput.value = produto.preco_unitario;
+
+        const nome_produtoInput = row.querySelector('td:nth-child(3) input');
+        nome_produtoInput.value = produto.nome_produto;
+
+        // Atualiza o subtotal da linha
+        atualizarSubtotal({ target: precoInput });
+
+        mostrarMensagem(`Produto ${produto.nome_produto} encontrado!`, 'success');
+
+    } catch (error) {
+        console.error('Erro ao buscar produto:', error);
+        mostrarMensagem(error.message, 'error');
+    }
 }

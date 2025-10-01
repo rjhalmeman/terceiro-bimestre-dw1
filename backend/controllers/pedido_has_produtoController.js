@@ -59,7 +59,9 @@ exports.obterPedido_has_produto = async (req, res) => {
     }
 
     const result = await query(
-      'SELECT * FROM pedido_has_produto WHERE pedido_id_pedido = $1',
+      'SELECT php.pedido_id_pedido , php.produto_id_produto , nome_produto , php.quantidade , php.preco_unitario' +
+      ' FROM pedido_has_produto php, produto p ' +
+      ' WHERE php.pedido_id_pedido = $1 and  php.produto_id_produto = p.id_produto ;',
       [id]
     );
 
