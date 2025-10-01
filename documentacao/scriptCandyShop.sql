@@ -183,8 +183,8 @@ insert into "forma_pagamento" ("nome_forma_pagamento") values
 insert into "pedido_has_produto" ("produto_id_produto", "pedido_id_pedido", quantidade, "preco_unitario") values
 (1, 1, 2, 5.50),
 (2, 2, 10, 0.50),
-(3, 3, 5, 1.00),
-(4, 4, 3, 3.20),
+(3, 2, 5, 1.00),
+(4, 2, 3, 3.20),
 (5, 5, 2, 7.00);
 
 -- PagamentoHasFormaPagamento (5 registros)

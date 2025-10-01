@@ -42,30 +42,37 @@
                         <label for="cliente_pessoa_cpf_pessoa">Cliente:</label>
                         <input type="number" id="cliente_pessoa_cpf_pessoa" name="cliente_pessoa_cpf_pessoa" required>
                         <label for="funcionario_pessoa_cpf_pessoa">Funcionário:</label>
-                        <input type="number" id="funcionario_pessoa_cpf_pessoa" name="funcionario_pessoa_cpf_pessoa" required>
+                        <input type="number" id="funcionario_pessoa_cpf_pessoa" name="funcionario_pessoa_cpf_pessoa"
+                            required>
                     </div>
                 </fieldset>
             </form>
 
+ 
+
             <div class="itensDoPedido">
-                <h3>Itens do Pedido</h3>
+                <div>Itens do Pedido                   
+                    <button type="button" id="btnAdicionarItem" onclick="adicionarItem()" class="btn-secondary btn-small"><i
+                            class="fas fa-box-open"></i> Adicionar Item</button> 
+                </div>
                 <div class="item-table-container">
                     <table id="itensTable">
                         <thead>
                             <tr>
                                 <th>ID Pedido</th>
-                                <th>ID Produto</th>
+                                <th>ID</th>
+                                <th>Produto</th>
                                 <th>Quantidade</th>
                                 <th>Preço Unitário</th>
                                 <th>Subtotal</th>
-                                <!-- <th>Ações</th> -->
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody id="itensTableBody">
                             <!-- Itens serão carregados dinamicamente -->
                         </tbody>
                     </table>
-            </div>    
+                </div>
 
 
         </section>
