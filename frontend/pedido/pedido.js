@@ -295,7 +295,10 @@ function renderizerTabelaItensPedido(itens) {
                 <input type="number" class="preco-input" data-index="${index}" 
                        value="${item.preco_unitario}" min="0" step="0.01">
             </td>                               
-            <td class="subtotal-cell">${subTotal}</td>      
+            <td class="subtotal-cell">${subTotal}</td> 
+            <td>
+               <button class="btn-secondary btn-small" onclick="btnSalvarItem(this)">Salvar</button>
+            </td>      
             <td>
                  <button class="btn-secondary btn-small" onclick="btnExcluirItem(this)">Excluir</button>
             </td>                
@@ -415,7 +418,7 @@ function adicionarItem() {
             <button class="btn-secondary btn-small" onclick="buscarProdutoPorId(this)">Buscar</button>
         </td>
         <td>
-            <input type="text" class="produto-nome-input" id="produto-nome-input" value="" readonly>
+            <span class="produto-nome-input" id="produto-nome-input" >xx</span>
         </td>
         <td>
             <input type="number" class="quantidade-input" value="1" min="1">
@@ -461,8 +464,8 @@ async function buscarProdutoPorId(button) {
         const precoInput = row.querySelector('.preco-input');
         precoInput.value = produto.preco_unitario;
 
-        const nome_produtoInput = row.querySelector('td:nth-child(3) input');
-        nome_produtoInput.value = produto.nome_produto;
+        const nome_produtoInput = row.querySelector('td:nth-child(3) span');
+        nome_produtoInput.innerHTML = produto.nome_produto;
 
         // Atualiza o subtotal da linha
         atualizarSubtotal({ target: precoInput });
