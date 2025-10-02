@@ -49,20 +49,57 @@ exports.criarPedido_has_produto = async (req, res) => {
   }
 }
 
+/////////////////////////////////////////////////////////////////////
+// Nova função para obter itens de um pedido específico
+/////////////////////////////////////////////////////////////////////
+
+exports.obterItensDeUmPedido_has_produto = async (req, res) => {
+  try {
+    console.log("Requisição recebida para obter itens de um pedido especifico:");
+    // 1. Extrai o ID do pedido dos parâmetros da requisição
+    const { idPedido } = req.params;
+
+    // 2. A query SQL com o parâmetro seguro ($1)
+    const result = await query(
+      'SELECT php.pedido_id_pedido , php.produto_id_produto , nome_produto , php.quantidade , php.preco_unitario' +
+      ' FROM pedido_has_produto php, produto p ' +
+      ' WHERE php.pedido_id_pedido = $1 and  php.produto_id_produto = p.id_produto ORDER BY php.produto_id_produto;',
+      [idPedido]
+    );
+
+    // 4. Verifica se foram encontrados itens
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: 'Nenhum item encontrado para este pedido.' });
+    }
+
+    // 5. Retorna os itens encontrados
+    res.status(200).json(result.rows);
+
+  } catch (error) {
+    // 6. Em caso de erro, retorna uma mensagem de erro genérica
+    console.error('Erro ao obter itens do pedido:', error);
+    res.status(500).json({ message: 'Erro ao processar a requisição.', error: error.message });
+  }
+};
+
 exports.obterPedido_has_produto = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    //chave composta id_pedido e id_produto
+    const { id_pedido, id_produto } = req.params;
+    const idPedido = parseInt(id_pedido);
+    const idProduto = parseInt(id_produto);
 
-    // console.log("estou no obter pedido_has_produto id="+ id);
-    if (isNaN(id)) {
-      return res.status(400).json({ error: 'ID deve ser um número válido' });
+     console.log("estou no obter pedido_has_produto =>"+ " IdPedido="+ idPedido + " idProduto= "+ idProduto);
+    // Verifica se ambos os IDs são números válidos
+    if (isNaN(idPedido) || isNaN(idProduto)) {
+      return res.status(400).json({ error: 'IDs devem ser números válidos' });
     }
 
     const result = await query(
       'SELECT php.pedido_id_pedido , php.produto_id_produto , nome_produto , php.quantidade , php.preco_unitario' +
       ' FROM pedido_has_produto php, produto p ' +
-      ' WHERE php.pedido_id_pedido = $1 and  php.produto_id_produto = p.id_produto ;',
-      [id]
+      ' WHERE php.pedido_id_pedido = $1 AND php.produto_id_produto=$2 AND php.produto_id_produto = p.id_produto;',
+      [idPedido, idProduto]
     );
 
     //console.log(result)
@@ -80,30 +117,59 @@ exports.obterPedido_has_produto = async (req, res) => {
 
 exports.atualizarPedido_has_produto = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
-    const { nome_pedido_has_produto } = req.body;
+    // Imprime todos os parâmetros da requisição para debugar
+    console.log("---------------------------------------");
+    console.log("Requisição recebida para atualizar item:");
+    console.log("Parâmetros da URL (req.params):", req.params);
+    console.log("Corpo da requisição (req.body):", req.body);
+    console.log("---------------------------------------");
+
+    // Extraímos ambos os IDs dos parâmetros da requisição, considerando a PK composta
+    const { id_pedido, id_produto } = req.params;
+    const dadosParaAtualizar = req.body;
+
+    console.log("id_pedido:", id_pedido, "id_produto:", id_produto);
+    console.log("dadosParaAtualizar:", dadosParaAtualizar);
+
+    // Verifica se ambos os IDs são números válidos
+    if (isNaN(parseInt(id_pedido)) || isNaN(parseInt(id_produto))) {
+      return res.status(400).json({ error: 'IDs devem ser números válidos' });
+    }
+
+    // Verifica se a pedido_has_produto existe  
 
 
     // Verifica se a pedido_has_produto existe
     const existingPersonResult = await query(
-      'SELECT * FROM pedido_has_produto WHERE id_pedido_has_produto = $1',
-      [id]
+      'SELECT * FROM pedido_has_produto WHERE pedido_id_pedido = $1 AND produto_id_produto = $2',
+      [id_pedido, id_produto]
     );
 
     if (existingPersonResult.rows.length === 0) {
-      return res.status(404).json({ error: 'Pedido_has_produto não encontrada' });
+      return res.status(404).json({ error: 'Pedido_has_produto não encontrado' });
     }
 
-    // Constrói a query de atualização dinamicamente para campos não nulos
-    const currentPerson = existingPersonResult.rows[0];
-    const updatedFields = {
-      nome_pedido_has_produto: nome_pedido_has_produto !== undefined ? nome_pedido_has_produto : currentPerson.nome_pedido_has_produto
-    };
+    // Constrói a query de atualização dinamicamente para campos id_pedido, id_produto, quantidade, preco_unitario  
+    const updatedFields = {};
+    if (dadosParaAtualizar.quantidade !== undefined) {
+      updatedFields.quantidade = dadosParaAtualizar.quantidade;
+    }
+    if (dadosParaAtualizar.preco_unitario !== undefined) {
+      updatedFields.preco_unitario = dadosParaAtualizar.preco_unitario;
+    }
+
+    if (Object.keys(updatedFields).length === 0) {
+      return res.status(400).json({ error: 'Nenhum campo válido para atualizar' });
+    }
+
+    console.log("Campos a serem atualizados:", updatedFields);
+    console.log("ID da pedido_has_produto a ser atualizada:", id_pedido, id_produto);
+
 
     // Atualiza a pedido_has_produto
-    const updateResult = await query(
-      'UPDATE pedido_has_produto SET nome_pedido_has_produto = $1 WHERE id_pedido_has_produto = $2 RETURNING *',
-      [updatedFields.nome_pedido_has_produto, id]
+    const updateResult = await query( // Ajuste na query para considerar a PK composta
+      'UPDATE pedido_has_produto SET quantidade = $1, preco_unitario = $2 WHERE pedido_id_pedido = $3 AND produto_id_produto = $4 RETURNING *',
+      [updatedFields.quantidade, updatedFields.preco_unitario, id_pedido, id_produto]
     );
 
     res.json(updateResult.rows[0]);

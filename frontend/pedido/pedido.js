@@ -297,7 +297,7 @@ function renderizerTabelaItensPedido(itens) {
             </td>                               
             <td class="subtotal-cell">${subTotal}</td> 
             <td>
-               <button class="btn-secondary btn-small" onclick="btnSalvarItem(this)">Salvar</button>
+               <button class="btn-secondary btn-small" onclick="btnSalvarItem(this)">Atualizar</button>
             </td>      
             <td>
                  <button class="btn-secondary btn-small" onclick="btnExcluirItem(this)">Excluir</button>
@@ -428,7 +428,7 @@ function adicionarItem() {
         </td>                               
         <td class="subtotal-cell">0,00</td>  
         <td>
-            <button class="btn-secondary btn-small" onclick="btnSalvarItem(this)">Salvar</button>
+            <button class="btn-secondary btn-small" onclick="btnAdicionarItem(this)">Adicionar</button>
         </td> 
                
     `;
@@ -476,4 +476,78 @@ async function buscarProdutoPorId(button) {
         console.error('Erro ao buscar produto:', error);
         mostrarMensagem(error.message, 'error');
     }
+}
+
+function btnAtualizarItem(button) {
+    // 1. Encontra a linha (<tr>) pai do botão que foi clicado.
+    // O 'closest' é um método muito útil para encontrar o ancestral mais próximo com o seletor especificado.
+    const row = button.closest('tr');
+
+    // Se a linha não for encontrada, algo está errado, então saímos da função.
+    if (!row) {
+        console.error("Erro: Não foi possível encontrar a linha da tabela (<tr>).");
+        return;
+    }
+
+    // 2. Pega todas as células (<td>) da linha.   
+    const cells = Array.from(row.cells);
+
+    // 3. Extrai os dados de cada célula da linha.
+    // Como sua tabela tem uma estrutura fixa, podemos usar os índices para pegar os dados.
+    // Lembre-se que os índices de arrays começam em 0.
+    const pedidoId = cells[0].textContent;
+    const produtoId = cells[1].textContent;
+    const nomeProduto = cells[2].textContent;
+    const quantidade = cells[3].querySelector('input').value;
+    const precoUnitario = cells[4].querySelector('input').value;
+
+
+    // 4. Converte os valores para os tipos de dados corretos, se necessário.
+    const itemData = {
+        pedido_id_pedido: parseInt(pedidoId),
+        produto_id_produto: parseInt(produtoId),
+        nome_produto: nomeProduto.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, " "), // Sanitiza e remove quebras de linha  
+        quantidade: parseInt(quantidade),
+        preco_unitario: parseFloat(precoUnitario.replace(',', '.'))
+    };
+
+    //  alert("Dados do item a serem salvos:" + JSON.stringify(itemData));
+
+    // 5. Valida os dados antes de enviar (opcional, mas recomendado).
+    if (isNaN(itemData.pedido_id_pedido) || isNaN(itemData.produto_id_produto) || isNaN(itemData.quantidade) || isNaN(itemData.preco_unitario)) {
+        mostrarMensagem('Por favor, preencha todos os campos corretamente.', 'warning');
+        return;
+    }
+
+    // remover o nome do produto do envio, pois é desnecessário
+    delete itemData.nome_produto;
+
+    //alert("Dados do item a serem salvos:" + JSON.stringify(itemData));
+    
+    // 6. Envia os dados para o backend usando fetch.
+    // Ajuste a URL e o método conforme sua API. router.put('/:id_pedido/:id_produto', pedido_has_produtoController.atualizarPedido_has_produto);
+    // Note que estamos enviando tanto o id do pedido quanto o id do produto na URL.
+    fetch(`${API_BASE_URL}/pedido_has_produto/${itemData.pedido_id_pedido}/${itemData.produto_id_produto}`, {    
+        method: 'PUT', // para atualizar
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(itemData)
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao salvar o item do pedido.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            mostrarMensagem('Item salvo com sucesso!', 'success');
+            // Aqui você pode atualizar a UI, limpar campos, etc.
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            mostrarMensagem(error.message, 'error');
+        });
+
+
 }
