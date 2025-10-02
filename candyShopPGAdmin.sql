@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict WquQXAX9W8VH92fUsRW81mc28f8qK1h7VpcC1C4ZallJfuNCYvOVxrCTqfwpdwi
+
 
 -- Dumped from database version 14.19 (Ubuntu 14.19-0ubuntu0.22.04.1)
 -- Dumped by pg_dump version 14.19 (Ubuntu 14.19-0ubuntu0.22.04.1)
@@ -699,5 +699,5 @@ ALTER TABLE ONLY public.pedido_has_produto
 -- PostgreSQL database dump complete
 --
 
-\unrestrict WquQXAX9W8VH92fUsRW81mc28f8qK1h7VpcC1C4ZallJfuNCYvOVxrCTqfwpdwi
+
 
