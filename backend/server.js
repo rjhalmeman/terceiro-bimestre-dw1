@@ -78,28 +78,6 @@ const menuRoutes = require('./routes/menuRoutes');
 app.use('/menu', menuRoutes);
 
 
-
-// const pessoaRoutes = require('./routes/pessoaRoutes');
-// app.use('/pessoa', pessoaRoutes);
-
-
-
-// const professorRoutes = require('./routes/professorRoutes');
-// app.use('/professor', professorRoutes);
-
-// const avaliadorRoutes = require('./routes/avaliadorRoutes');
-// app.use('/avaliador', avaliadorRoutes);
-
-// const avaliadoRoutes = require('./routes/avaliadoRoutes');
-// app.use('/avaliado', avaliadoRoutes);
-
-
-// const avaliacaoRoutes = require('./routes/avaliacaoRoutes');
-// app.use('/avaliacao', avaliacaoRoutes);
-
-// const avaliacaoHasQuestaoRoutes = require('./routes/avaliacaoHasQuestaoRoutes');
-// app.use('/avaliacaoHasQuestao', avaliacaoHasQuestaoRoutes);
-
 const cargoRoutes = require('./routes/cargoRoutes');
 app.use('/cargo', cargoRoutes);
 
