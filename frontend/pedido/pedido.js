@@ -210,6 +210,9 @@ async function salvarOperacao() {
         cliente_pessoa_cpf_pessoa: formData.get('cliente_pessoa_cpf_pessoa'),
         funcionario_pessoa_cpf_pessoa: formData.get('funcionario_pessoa_cpf_pessoa'),
     };
+
+    console.log(pedido)
+
     let response = null;
     try {
         if (operacao === 'incluir') {
