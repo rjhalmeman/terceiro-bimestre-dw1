@@ -93,7 +93,7 @@ app.use('/pedido', pedidoRoutes);
 const pedido_has_produtoRoutes = require('./routes/pedido_has_produtoRoutes');
 app.use('/pedido_has_produto', pedido_has_produtoRoutes);
 
-const cliente = require('./routes/clienteRoutes');
+const clienteRoutes = require('./routes/clienteRoutes');
 app.use('/cliente', clienteRoutes);
 
 

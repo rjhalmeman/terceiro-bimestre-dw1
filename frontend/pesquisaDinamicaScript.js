@@ -6,18 +6,33 @@ JavaScript — tornando o código mais seguro, previsível e menos propenso a er
 /* lista de atributos e dados (exemplo) */
 const atributosParaPesquisar = ['cpf', 'nome'];
 
-const dadosParaFiltrar = [
-    { cpf: "11111111111", nome: "Ana Silva" },
-    { cpf: "222.222.222-22", nome: "Bruno Costa" },
-    { cpf: "333.333.333-33", nome: "Carlos Oliveira" },
-    { cpf: "444.444.444-44", nome: "Daniela Pereira" },
-    { cpf: "555.555.555-55", nome: "Eduardo Santos" },
-    { cpf: "666.666.666-66", nome: "Fernanda Lima" },
-    { cpf: "777.777.777-77", nome: "Gustavo Rocha" },
-    { cpf: "888.888.888-88", nome: "Helena Alves" },
-    { cpf: "999.999.999-99", nome: "Igor Martins" },
-    { cpf: "000.000.000-00", nome: "Juliana Costa" }
-];
+
+//buscar dados no backend: rota http://localhost:3001/cliente
+
+const osClientes = fetch('http://localhost:3001/cliente');
+osClientes.then(response => response.json())
+    .then(data => {
+        console.log("Dados dos clientes recebidos do backend:", data);
+        // mapeia os dados para o formato esperado (com 'cpf' e 'nome')
+        window.osClientes = data.map(item => ({
+            cpf: item.pessoa_cpf_pessoa,
+            nome: item.nome_pessoa
+        }));
+        console.log("Dados dos clientes mapeados:", window.osClientes);
+    })
+    .catch(error => {
+        console.error("Erro ao buscar dados dos clientes:", error);
+        window.osClientes = []; // garante que a variável exista mesmo em caso de erro
+    });
+
+// dados fixos para teste (serão substituídos pelos dados reais do backend)
+
+const dadosParaFiltrar = osClientes.data ? osClientes.data.map(item => ({
+    cpf: item.pessoa_cpf_pessoa,
+    nome: item.nome_pessoa
+})) : [] ;
+
+console.log("dadosParaFiltrar:", dadosParaFiltrar);
 
 /**
  * Cria a busca dinâmica: retorna um objeto com waitForSelection()
