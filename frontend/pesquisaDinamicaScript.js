@@ -1,4 +1,4 @@
-"use strict"; 
+"use strict";
 /* é uma diretiva do JavaScript que ativa o chamado modo estrito (strict mode).
 Ela não é um comando, e sim uma instrução especial que muda o comportamento do interpretador 
 JavaScript — tornando o código mais seguro, previsível e menos propenso a erros silenciosos.*/
@@ -8,17 +8,24 @@ const atributosParaPesquisar = ['cpf', 'nome'];
 
 
 //buscar dados no backend: rota http://localhost:3001/cliente
+let dadosParaFiltrar = [];
+
 
 const osClientes = fetch('http://localhost:3001/cliente');
 osClientes.then(response => response.json())
     .then(data => {
-        console.log("Dados dos clientes recebidos do backend:", data);
+     //   console.log("Dados dos clientes recebidos do backend:", data);
         // mapeia os dados para o formato esperado (com 'cpf' e 'nome')
         window.osClientes = data.map(item => ({
             cpf: item.pessoa_cpf_pessoa,
             nome: item.nome_pessoa
         }));
-        console.log("Dados dos clientes mapeados:", window.osClientes);
+     //   console.log("Dados dos clientes mapeados:", window.osClientes);
+
+        dadosParaFiltrar = window.osClientes ? window.osClientes : [];
+
+       // console.log("dadosParaFiltrar atualizado:", dadosParaFiltrar);
+
     })
     .catch(error => {
         console.error("Erro ao buscar dados dos clientes:", error);
@@ -27,10 +34,6 @@ osClientes.then(response => response.json())
 
 // dados fixos para teste (serão substituídos pelos dados reais do backend)
 
-const dadosParaFiltrar = osClientes.data ? osClientes.data.map(item => ({
-    cpf: item.pessoa_cpf_pessoa,
-    nome: item.nome_pessoa
-})) : [] ;
 
 console.log("dadosParaFiltrar:", dadosParaFiltrar);
 
@@ -136,10 +139,10 @@ async function buscaDinamica() {
     // debugger;   
     window.bdBusca = createBuscaDinamica({ atributosParaPesquisar, dadosParaFiltrar });
 
-    if (!window.bdBusca){
+    if (!window.bdBusca) {
         console.error("Erro: bdBusca não inicializado.");
         return;
-    } 
+    }
 
     const resposta = await window.bdBusca.waitForSelection();
 
