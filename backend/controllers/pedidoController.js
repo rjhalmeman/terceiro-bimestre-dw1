@@ -5,14 +5,14 @@ const { query } = require('../database');
 const path = require('path');
 
 exports.abrirCrudPedido = (req, res) => {
- // console.log('pedidoController - Rota /abrirCrudPedido - abrir o crudPedido');
+  // console.log('pedidoController - Rota /abrirCrudPedido - abrir o crudPedido');
   res.sendFile(path.join(__dirname, '../../frontend/pedido/pedido.html'));
 }
 
 exports.listarPedidos = async (req, res) => {
   try {
     const result = await query('SELECT * FROM pedido ORDER BY id_pedido');
-   //  console.log('Resultado do SELECT:', result.rows);//verifica se está retornando algo
+    //  console.log('Resultado do SELECT:', result.rows);//verifica se está retornando algo
     res.json(result.rows);
   } catch (error) {
     console.error('Erro ao listar pedidos:', error);
@@ -24,17 +24,10 @@ exports.listarPedidos = async (req, res) => {
 exports.criarPedido = async (req, res) => {
   //  console.log('Criando pedido com dados:', req.body);
   try {
-    const { id_pedido, data_pedido, cliente_pessoa_cpf_pessoa, funcionario_pessoa_cpf_pessoa} = req.body;
-
-    // Validação básica
-    if (!nome_pedido) {
-      return res.status(400).json({
-        error: 'O nome do pedido é obrigatório'
-      });
-    }
+    const { id_pedido, data_pedido, cliente_pessoa_cpf_pessoa, funcionario_pessoa_cpf_pessoa } = req.body;
 
     const result = await query(
-      'INSERT INTO pedido (id_pedido, data_pedido, cliente_pessoa_cpf_pessoa, funcionario_pessoa_cpf_pessoa) VALUES ($1, $2, $3,#4) RETURNING *',
+      'INSERT INTO pedido (id_pedido, data_pedido, cliente_pessoa_cpf_pessoa, funcionario_pessoa_cpf_pessoa) VALUES ($1, $2, $3,$4) RETURNING *',
       [id_pedido, data_pedido, cliente_pessoa_cpf_pessoa, funcionario_pessoa_cpf_pessoa]
     );
 
@@ -42,7 +35,7 @@ exports.criarPedido = async (req, res) => {
   } catch (error) {
     console.error('Erro ao criar pedido:', error);
 
-   
+
 
     // Verifica se é erro de violação de constraint NOT NULL
     if (error.code === '23502') {
@@ -59,7 +52,7 @@ exports.obterPedido = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
 
-   // console.log("estou no obter pedido id="+ id);
+    // console.log("estou no obter pedido id="+ id);
     if (isNaN(id)) {
       return res.status(400).json({ error: 'ID deve ser um número válido' });
     }
@@ -87,7 +80,7 @@ exports.atualizarPedido = async (req, res) => {
     const id = parseInt(req.params.id, 10);
     if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
 
-    const { data_pedido, cliente_pessoa_cpf_pessoa, funcionario_pessoa_cpf_pessoa} = req.body;
+    const { data_pedido, cliente_pessoa_cpf_pessoa, funcionario_pessoa_cpf_pessoa } = req.body;
 
     // Verifica se o pedido existe
     const existing = await query('SELECT * FROM pedido WHERE id_pedido = $1', [id]);
@@ -103,7 +96,7 @@ exports.atualizarPedido = async (req, res) => {
       WHERE id_pedido = $4
       RETURNING *
     `;
-    const values = [data_pedido, cliente_pessoa_cpf_pessoa, funcionario_pessoa_cpf_pessoa, id]; 
+    const values = [data_pedido, cliente_pessoa_cpf_pessoa, funcionario_pessoa_cpf_pessoa, id];
 
     const updateResult = await query(sql, values);
     return res.json(updateResult.rows[0]);

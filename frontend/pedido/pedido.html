@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRUD - Pedido</title>
+    <link rel="stylesheet" href="../pesquisaDinamicaStyle.css">
     <link rel="stylesheet" href="./pedido.css">
 </head>
 
@@ -39,21 +40,38 @@
                     <div class="form-group">
                         <label for="data_pedido">Data do pedido:</label>
                         <input type="date" id="data_pedido" name="data_pedido" required>
-                        <label for="cliente_pessoa_cpf_pessoa">Cliente:</label>
-                        <input type="number" id="cliente_pessoa_cpf_pessoa" name="cliente_pessoa_cpf_pessoa" required>
-                        <label for="funcionario_pessoa_cpf_pessoa">Funcionário:</label>
-                        <input type="number" id="funcionario_pessoa_cpf_pessoa" name="funcionario_pessoa_cpf_pessoa"
-                            required>
+
+                        <!-- combobox -->
+                        <!-- <label for="cliente_pessoa_cpf_pessoa">Cliente:</label>
+                        <input type="number" id="cliente_pessoa_cpf_pessoa" name="cliente_pessoa_cpf_pessoa" required> -->
+
+
+
+                        <div class="search-bar-container">
+                            <select id="searchType" class="search-select">
+                                <option value="cpf">CPF</option>
+                                <option value="nome">Nome</option>
+                            </select>
+                            <input type="text" id="cliente_pessoa_cpf_pessoa" name="cliente_pessoa_cpf_pessoa" placeholder="CPF pessoa..."
+                                onfocus="buscaDinamica()">
+                            <ul id="resultsList" class="results-list"></ul>
+                        </div>
+                    </div>
+
+
+                    <label for="funcionario_pessoa_cpf_pessoa">Funcionário:</label>
+                    <input type="number" id="funcionario_pessoa_cpf_pessoa" name="funcionario_pessoa_cpf_pessoa"
+                        required>
                     </div>
                 </fieldset>
             </form>
 
- 
+
 
             <div class="itensDoPedido">
-                <div>Itens do Pedido                   
-                    <button type="button" id="btnAdicionarItem" onclick="adicionarItem()" class="btn-secondary btn-small"><i
-                            class="fas fa-box-open"></i> Adicionar Item</button> 
+                <div>Itens do Pedido
+                    <button type="button" id="btnAdicionarItem" onclick="adicionarItem()"
+                        class="btn-secondary btn-small"><i class="fas fa-box-open"></i> Adicionar Item</button>
                 </div>
                 <div class="item-table-container">
                     <table id="itensTable">
@@ -102,7 +120,7 @@
     </footer>
 
     <div id="messageContainer" class="message-container"></div>
-
+    <script src="../pesquisaDinamicaScript.js"></script>
     <script src="./pedido.js" defer></script>
 
 </body>
