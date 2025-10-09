@@ -88,13 +88,13 @@ section h2 {
 fieldset {
     border: 1px solid #6fa06f;
     border-radius: 8px;
-    padding: 1.0rem;
+    padding: 0.8rem;
     margin-bottom: 1rem;
     background: #fafffe;
 }
 
 fieldset legend {
-    font-weight: 600;
+    font-weight: 300;
     color: #2d4a2d;
     padding: 0 0.5rem;
     font-size: 1.0rem;
@@ -426,4 +426,35 @@ footer {
     font-size: 0.9rem;
     height: 38px; /* Mantém a mesma altura do input */
     min-width: auto;
+}
+
+/* Estilos para a busca dinâmica (Cliente/CPF) */
+.search-bar-container {
+    display: flex;
+    /* Ocupa o espaço dentro do .form-field-wrapper */
+    width: 40%; 
+    position: relative; /* Para posicionar a lista de resultados */
+}
+
+/* MODIFICADO: Redução da largura do Select do CPF */
+.search-bar-container .search-select {
+    width: 30% !important; /* Força uma largura menor para o select */
+    flex-shrink: 0; /* Impede que ele encolha */
+    padding: 0.8rem;
+    border: 2px solid #c0e0c0;
+    border-radius: 6px 0 0 6px; /* Ajusta as bordas para se juntar ao input */
+    border-right: none; /* Remove a borda direita para se fundir */
+}
+
+/* MODIFICADO: Estilo do input de busca do Cliente/CPF */
+.search-bar-container input[type="text"] {
+    /* Ocupa o espaço restante */
+    width: 70% !important; 
+    border-radius: 0 6px 6px 0; /* Ajusta as bordas para se juntar ao select */
+    /* Garante que ele tenha os mesmos estilos do .form-field-wrapper input */
+    padding: 0.8rem;
+    border: 2px solid #c0e0c0;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
 }
