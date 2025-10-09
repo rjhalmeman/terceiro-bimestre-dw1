@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRUD - Pedido</title>
-    <link rel="stylesheet" href="../pesquisaDinamicaStyle.css">
+    <link rel="stylesheet" href="./pesquisaDinamicaStyle.css">
     <link rel="stylesheet" href="./pedido.css">
 </head>
 
@@ -38,30 +38,28 @@
                     <legend>Dados do Pedido</legend>
 
                     <div class="form-group">
-                        <label for="data_pedido">Data do pedido:</label>
+                        <!-- <label for="data_pedido">Data do pedido:</label> -->
                         <input type="date" id="data_pedido" name="data_pedido" required>
 
                         <!-- combobox -->
                         <!-- <label for="cliente_pessoa_cpf_pessoa">Cliente:</label>
                         <input type="number" id="cliente_pessoa_cpf_pessoa" name="cliente_pessoa_cpf_pessoa" required> -->
 
-
-
                         <div class="search-bar-container">
                             <select id="searchType" class="search-select">
                                 <option value="cpf">CPF</option>
                                 <option value="nome">Nome</option>
                             </select>
-                            <input type="text" id="cliente_pessoa_cpf_pessoa" name="cliente_pessoa_cpf_pessoa" placeholder="CPF pessoa..."
-                                onfocus="buscaDinamica()">
+                            <input type="text" id="cliente_pessoa_cpf_pessoa" name="cliente_pessoa_cpf_pessoa"
+                                placeholder="CPF cliente..." onfocus="buscaDinamica()">
                             <ul id="resultsList" class="results-list"></ul>
                         </div>
+                        <!-- <label for="funcionario_pessoa_cpf_pessoa">Funcionário:</label> -->
+                        <input type="number" id="funcionario_pessoa_cpf_pessoa" name="funcionario_pessoa_cpf_pessoa"
+                            placeholder="CPF funcionário..." required>
                     </div>
 
 
-                    <label for="funcionario_pessoa_cpf_pessoa">Funcionário:</label>
-                    <input type="number" id="funcionario_pessoa_cpf_pessoa" name="funcionario_pessoa_cpf_pessoa"
-                        required>
                     </div>
                 </fieldset>
             </form>
@@ -96,23 +94,6 @@
 
         </section>
 
-        <!-- <section class="list-section">
-            <div class="table-container">
-                <table id="pedidosTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Data</th>
-                            <th>Cliente</th>
-                            <th>Funcionário</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pedidosTableBody">
-                        
-                    </tbody>
-                </table>
-            </div>
-        </section> -->
     </main>
 
     <footer>
@@ -120,7 +101,7 @@
     </footer>
 
     <div id="messageContainer" class="message-container"></div>
-    <script src="../pesquisaDinamicaScript.js"></script>
+    <script src="./pesquisaDinamicaCliente.js"></script>
     <script src="./pedido.js" defer></script>
 
 </body>

@@ -231,6 +231,7 @@ async function salvarOperacao() {
                 },
                 body: JSON.stringify(pedido)
             });
+             renderizerTabelaItensPedido([]);
         } else if (operacao === 'excluir') {
             // console.log('Excluindo pedido com ID:', currentPersonId);
             response = await fetch(`${API_BASE_URL}/pedido/${currentPersonId}`, {
