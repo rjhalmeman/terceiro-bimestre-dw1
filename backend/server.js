@@ -21,7 +21,8 @@ console.log('Caminho frontend:', caminhoFrontend);
 
 app.use(express.static(caminhoFrontend));
 
-
+// Middlewares
+app.use(express.json());
 
 app.use(cookieParser());
 // Middleware para permitir CORS (Cross-Origin Resource Sharing)
@@ -30,7 +31,7 @@ app.use(cookieParser());
 // Em produção, você deve restringir isso para domínios específicos por segurança.
 // Aqui, estamos permitindo qualquer origem, o que é útil para desenvolvimento, mas deve ser ajustado em produção.
 app.use((req, res, next) => {
-  const allowedOrigins = ['http://127.0.0.1:5500','http://localhost:5500', 'http://127.0.0.1:5501', 'http://localhost:3000', 'http://localhost:3001'];
+  const allowedOrigins = ['http://127.0.0.1:5500','http://localhost:5500', 'http://localhost:5501', 'http://127.0.0.1:5501', 'http://localhost:3000', 'http://localhost:3001'];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
@@ -54,8 +55,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Middlewares
-app.use(express.json());
+
 
 // Middleware de tratamento de erros JSON malformado
 app.use((err, req, res, next) => {
@@ -93,8 +93,19 @@ app.use('/pedido', pedidoRoutes);
 const pedido_has_produtoRoutes = require('./routes/pedido_has_produtoRoutes');
 app.use('/pedido_has_produto', pedido_has_produtoRoutes);
 
+//clienteRoutes tem que vir antes de pessoaRoutes
 const clienteRoutes = require('./routes/clienteRoutes');
 app.use('/cliente', clienteRoutes);
+
+//funcionarioRoutes tem que vir antes de pessoaRoutes
+const funcionarioRoutes = require('./routes/funcionarioRoutes');
+app.use('/funcionario', funcionarioRoutes);
+
+const pessoaRoutes = require('./routes/pessoaRoutes');
+app.use('/pessoa', pessoaRoutes);
+
+
+
 
 
 
