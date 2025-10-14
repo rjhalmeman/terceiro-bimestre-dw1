@@ -1,17 +1,28 @@
-//import { query } from '../database.js';
+/*
+CREATE TABLE public.pessoa (
+  cpf_pessoa varchar(20) NOT NULL,
+  nome_pessoa varchar(60) NULL,
+  data_nascimento_pessoa date NULL,
+  endereco_pessoa varchar(150) NULL,
+  senha_pessoa varchar(50) NULL,
+  email_pessoa varchar(75) NULL,
+  CONSTRAINT pessoa_pkey PRIMARY KEY (cpf_pessoa),
+  CONSTRAINT pessoa_unique UNIQUE (email_pessoa)
+);
+*/
 const { query } = require('../database');
 // Funções do controller
 
 const path = require('path');
 
 exports.abrirCrudPessoa = (req, res) => {
-//  console.log('pessoaController - Rota /abrirCrudPessoa - abrir o crudPessoa');
+  //  console.log('pessoaController - Rota /abrirCrudPessoa - abrir o crudPessoa');
   res.sendFile(path.join(__dirname, '../../frontend/pessoa/pessoa.html'));
 }
 
 exports.listarPessoas = async (req, res) => {
   try {
-    const result = await query('SELECT * FROM pessoa ORDER BY id_pessoa');
+    const result = await query('SELECT * FROM pessoa ORDER BY cpf_pessoa');
     // console.log('Resultado do SELECT:', result.rows);//verifica se está retornando algo
     res.json(result.rows);
   } catch (error) {
@@ -23,12 +34,12 @@ exports.listarPessoas = async (req, res) => {
 exports.criarPessoa = async (req, res) => {
   //  console.log('Criando pessoa com dados:', req.body);
   try {
-    const { id_pessoa, nome_pessoa, email_pessoa, senha_pessoa, primeiro_acesso_pessoa = true, data_nascimento } = req.body;
+    const { cpf_pessoa, nome_pessoa, data_nascimento_pessoa, endereco_pessoa, senha_pessoa, email_pessoa } = req.body;
 
     // Validação básica
-    if (!nome_pessoa || !email_pessoa || !senha_pessoa) {
+    if (!nome_pessoa || !endereco_pessoa || !senha_pessoa || !email_pessoa) {
       return res.status(400).json({
-        error: 'Nome, email e senha são obrigatórios'
+        error: 'Nome, email, endereço e senha são obrigatórios'
       });
     }
 
@@ -41,8 +52,8 @@ exports.criarPessoa = async (req, res) => {
     }
 
     const result = await query(
-      'INSERT INTO pessoa (id_pessoa, nome_pessoa, email_pessoa, senha_pessoa, primeiro_acesso_pessoa, data_nascimento) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [id_pessoa, nome_pessoa, email_pessoa, senha_pessoa, primeiro_acesso_pessoa, data_nascimento]
+      'INSERT INTO pessoa (cpf_pessoa, nome_pessoa, data_nascimento_pessoa,endereco_pessoa,senha_pessoa, email_pessoa ) VALUES ($1, $2, $3, $4, $5,$6) RETURNING *',
+      [cpf_pessoa, nome_pessoa, data_nascimento_pessoa,endereco_pessoa,senha_pessoa, email_pessoa]
     );
 
     res.status(201).json(result.rows[0]);
@@ -50,7 +61,7 @@ exports.criarPessoa = async (req, res) => {
     console.error('Erro ao criar pessoa:', error);
 
     // Verifica se é erro de email duplicado (constraint unique violation)
-    if (error.code === '23505' && error.constraint === 'pessoa_email_pessoa_key') {
+    if (error.code === '23505' && error.constraint === 'pessoa_unique') {
       return res.status(400).json({
         error: 'Email já está em uso'
       });
@@ -72,11 +83,11 @@ exports.obterPessoa = async (req, res) => {
     const id = parseInt(req.params.id);
 
     if (isNaN(id)) {
-      return res.status(400).json({ error: 'ID deve ser um número válido' });
+      return res.status(400).json({ error: 'CPF deve ser um número válido' });
     }
 
     const result = await query(
-      'SELECT * FROM pessoa WHERE id_pessoa = $1',
+      'SELECT * FROM pessoa WHERE cpf_pessoa = $1',
       [id]
     );
 
@@ -94,7 +105,7 @@ exports.obterPessoa = async (req, res) => {
 exports.atualizarPessoa = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const { nome_pessoa, email_pessoa, senha_pessoa, primeiro_acesso_pessoa, data_nascimento } = req.body;
+    const { nome_pessoa, data_nascimento_pessoa,endereco_pessoa,senha_pessoa, email_pessoa } = req.body;
 
     // Validação de email se fornecido
     if (email_pessoa) {
@@ -107,7 +118,7 @@ exports.atualizarPessoa = async (req, res) => {
     }
     // Verifica se a pessoa existe
     const existingPersonResult = await query(
-      'SELECT * FROM pessoa WHERE id_pessoa = $1',
+      'SELECT * FROM pessoa WHERE cpf_pessoa = $1',
       [id]
     );
 
@@ -119,16 +130,17 @@ exports.atualizarPessoa = async (req, res) => {
     const currentPerson = existingPersonResult.rows[0];
     const updatedFields = {
       nome_pessoa: nome_pessoa !== undefined ? nome_pessoa : currentPerson.nome_pessoa,
-      email_pessoa: email_pessoa !== undefined ? email_pessoa : currentPerson.email_pessoa,
+      data_nascimento_pessoa: data_nascimento_pessoa !== undefined ? data_nascimento_pessoa : currentPerson.data_nascimento_pessoa,
+      endereco_pessoa: endereco_pessoa !== undefined ? endereco_pessoa : currentPerson.endereco_pessoa,
       senha_pessoa: senha_pessoa !== undefined ? senha_pessoa : currentPerson.senha_pessoa,
-      primeiro_acesso_pessoa: primeiro_acesso_pessoa !== undefined ? primeiro_acesso_pessoa : currentPerson.primeiro_acesso_pessoa,
-      data_nascimento: data_nascimento !== undefined ? data_nascimento : currentPerson.data_nascimento
+      email_pessoa: email_pessoa !== undefined ? email_pessoa : currentPerson.email_pessoa 
     };
-
+    
+    //cpf_pessoa, nome_pessoa, data_nascimento_pessoa,endereco_pessoa,senha_pessoa, email_pessoa
     // Atualiza a pessoa
     const updateResult = await query(
-      'UPDATE pessoa SET nome_pessoa = $1, email_pessoa = $2, senha_pessoa = $3, primeiro_acesso_pessoa = $4, data_nascimento = $5 WHERE id_pessoa = $6 RETURNING *',
-      [updatedFields.nome_pessoa, updatedFields.email_pessoa, updatedFields.senha_pessoa, updatedFields.primeiro_acesso_pessoa, updatedFields.data_nascimento, id]
+      'UPDATE pessoa SET nome_pessoa = $1,  data_nascimento_pessoa = $2, endereco_pessoa = $3, senha_pessoa=$4, email_pessoa=$5  WHERE cpf_pessoa = $6 RETURNING *',
+      [updatedFields.nome_pessoa, updatedFields.data_nascimento_pessoa, updatedFields.endereco_pessoa,updatedFields.senha_pessoa,updatedFields.email_pessoa, id]
     );
 
     res.json(updateResult.rows[0]);
@@ -136,7 +148,7 @@ exports.atualizarPessoa = async (req, res) => {
     console.error('Erro ao atualizar pessoa:', error);
 
     // Verifica se é erro de email duplicado
-    if (error.code === '23505' && error.constraint === 'pessoa_email_pessoa_key') {
+    if (error.code === '23505' && error.constraint === 'pessoa_unique') {
       return res.status(400).json({
         error: 'Email já está em uso por outra pessoa'
       });
@@ -151,7 +163,7 @@ exports.deletarPessoa = async (req, res) => {
     const id = parseInt(req.params.id);
     // Verifica se a pessoa existe
     const existingPersonResult = await query(
-      'SELECT * FROM pessoa WHERE id_pessoa = $1',
+      'SELECT * FROM pessoa WHERE cpf_pessoa = $1',
       [id]
     );
 
@@ -161,7 +173,7 @@ exports.deletarPessoa = async (req, res) => {
 
     // Deleta a pessoa (as constraints CASCADE cuidarão das dependências)
     await query(
-      'DELETE FROM pessoa WHERE id_pessoa = $1',
+      'DELETE FROM pessoa WHERE cpf_pessoa = $1',
       [id]
     );
 
@@ -172,7 +184,7 @@ exports.deletarPessoa = async (req, res) => {
     // Verifica se é erro de violação de foreign key (dependências)
     if (error.code === '23503') {
       return res.status(400).json({
-        error: 'Não é possível deletar pessoa com dependências associadas'
+        error: 'Não é possível deletar pessoa com dependências associadas (essa pessoa é cliente ou funcionário)'
       });
     }
 
@@ -183,15 +195,15 @@ exports.deletarPessoa = async (req, res) => {
 // Função adicional para buscar pessoa por email
 exports.obterPessoaPorEmail = async (req, res) => {
   try {
-    const { email } = req.params;
+    const { email_pessoa } = req.params;
 
-    if (!email) {
+    if (!email_pessoa) {
       return res.status(400).json({ error: 'Email é obrigatório' });
     }
 
     const result = await query(
-      'SELECT * FROM pessoa WHERE email_pessoa = $1',
-      [email]
+      'SELECT * FROM pessoa WHERE endereco_pessoa = $1',
+      [email_pessoa]
     );
 
     if (result.rows.length === 0) {
@@ -223,7 +235,7 @@ exports.atualizarSenha = async (req, res) => {
 
     // Verifica se a pessoa existe e a senha atual está correta
     const personResult = await query(
-      'SELECT * FROM pessoa WHERE id_pessoa = $1',
+      'SELECT * FROM pessoa WHERE cpf_pessoa = $1',
       [id]
     );
 
@@ -240,7 +252,7 @@ exports.atualizarSenha = async (req, res) => {
 
     // Atualiza apenas a senha
     const updateResult = await query(
-      'UPDATE pessoa SET senha_pessoa = $1 WHERE id_pessoa = $2 RETURNING id_pessoa, nome_pessoa, email_pessoa, primeiro_acesso_pessoa, data_nascimento',
+      'UPDATE pessoa SET senha_pessoa = $1 WHERE cpf_pessoa = $2 RETURNING cpf_pessoa, nome_pessoa, endereco_pessoa, primeiro_acesso_pessoa, data_nascimento_pessoa',
       [nova_senha, id]
     );
 

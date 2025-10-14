@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRUD - Pessoa</title>
-    <link rel="stylesheet" href="/pessoa/pessoa.css">
+    <link rel="stylesheet" href="./pessoa.css">
 </head>
 
 <body>
@@ -40,10 +40,13 @@
                         <label for="nome_pessoa">Nome:</label>
                         <input type="text" id="nome_pessoa" name="nome_pessoa" required>
                     </div>
-
                     <div class="form-group">
-                        <label for="email_pessoa">Email:</label>
-                        <input type="email" id="email_pessoa" name="email_pessoa" required>
+                        <label for="data_nascimento">Data de Nascimento:</label>
+                        <input type="date" id="data_nascimento" name="data_nascimento">
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco_pessoa">Endereço:</label>
+                        <input type="text" id="endereco_pessoa" name="endereco_pessoa" required>
                     </div>
 
                     <div class="form-group">
@@ -52,47 +55,57 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="primeiro_acesso_pessoa">Primeiro Acesso:</label>
-                        <select id="primeiro_acesso_pessoa" name="primeiro_acesso_pessoa">
-                            <option value="true">Sim</option>
-                            <option value="false">Não</option>
-                        </select>
+                        <label for="email_pessoa">Email:</label>
+                        <input type="email" id="email_pessoa" name="email_pessoa" required>
                     </div>
 
-                    <div class="form-group">
-                        <label for="data_nascimento">Data de Nascimento:</label>
-                        <input type="date" id="data_nascimento" name="data_nascimento">
-                    </div>
+
+
                 </fieldset>
             </form>
             <div class="umParaum">
-                <div class="professor">
-                    <input type="checkbox" id="checkboxProfessor" name="checkboxProfessor">
-                    <span id="spanProfessor">Professor</span>
-                    <input type="text" id="mnemonicoProfessor" name="mnemonicoProfessor" placeholder="Mnemônico" style="display: inline;">
-                    <input type="text" id="departamentoProfessor" name="departamentoProfessor" placeholder="Departamento" style="display: inline;">
+                <div class="funcionario">
+                    <input type="checkbox" id="checkboxFuncionario" name="checkboxFuncionario">
+                    <span id="spanFuncionario">Funcionário</span>
+                    <input type="text" id="cargo_id_cargo" name="cargo_id_cargo" placeholder="Id Cargo" style="display: inline;">
+                    <input type="number" id="salario_funcionario" name="salario_funcionario" placeholder="Salário"
+                        style="display: inline;">
+                    <input type="text" id="porcentagem_comissao_funcionario" name="porcentagem_comissao_funcionario"
+                        placeholder="Porcentagem Comissão" style="display: inline;">
 
                 </div>
-                <div class="avaliador">
-                    <input type="checkbox" id="checkboxAvaliador" name="checkboxAvaliador">
-                    <span>Avaliador</span>
-                </div>
-                <div class="avaliado">
-                    <input type="checkbox" id="checkboxAvaliado" name="checkboxAvaliado"> Avaliado
+                <div class="cliente">
+                    <input type="checkbox" id="checkboxCliente" name="checkboxCliente">
+                    <span>Cliente</span>
+                    <label for="Renda mensal"></label>
+                    <input type="number" id="renda_cliente" name="renda_cliente" placeholder="Renda mensal do cliente"
+                        style="display: inline;">
+                    <label for="data_cadastro_cliente">Data de cadastro</label>
+                    <input type="date" id="data_cadastro_cliente" name="data_cadastro_cliente"
+                        placeholder="Data de cadastro do cliente" style="display: inline;">
                 </div>
             </div>
         </section>
+
+        <!--  //cpf_pessoa, 
+                      nome_pessoa, 
+                      data_nascimento_pessoa,
+                      endereco_pessoa,
+                      senha_pessoa, 
+                      email_pessoa 
+                      -->
 
         <section class="list-section">
             <div class="table-container">
                 <table id="pessoasTable">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>CPF</th>
                             <th>Nome</th>
-                            <th>Email</th>
-                            <th>Primeiro Acesso</th>
                             <th>Data Nascimento</th>
+                            <th>Endereço</th>
+                            <th>Senha</th>
+                            <th>Email</th>
                         </tr>
                     </thead>
                     <tbody id="pessoasTableBody">
@@ -109,7 +122,7 @@
 
     <div id="messageContainer" class="message-container"></div>
 
-    <script src="/pessoa/pessoa.js" defer></script>
+    <script src="./pessoa.js" defer></script>
 
 </body>
 

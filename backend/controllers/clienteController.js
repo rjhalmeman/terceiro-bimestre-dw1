@@ -12,7 +12,7 @@ exports.abrirCrudCliente = (req, res) => {
 exports.listarClientes = async (req, res) => {
   try {
     const result = await query('SELECT cli.pessoa_cpf_pessoa, p.nome_pessoa,cli.renda_cliente,cli.data_cadastro_cliente FROM cliente cli, pessoa p where cli.pessoa_cpf_pessoa = p.cpf_pessoa ORDER BY cli.pessoa_cpf_pessoa ');
-     console.log('Resultado do SELECT:', result.rows);//verifica se está retornando algo
+    console.log('Resultado do SELECT:', result.rows);//verifica se está retornando algo
     res.json(result.rows);
   } catch (error) {
     console.error('Erro ao listar clientes:', error);
@@ -24,25 +24,25 @@ exports.listarClientes = async (req, res) => {
 exports.criarCliente = async (req, res) => {
   //  console.log('Criando cliente com dados:', req.body);
   try {
-    const { id_cliente, nome_cliente} = req.body;
+    const { pessoa_cpf_pessoa, renda_cliente, data_cadastro_cliente } = req.body;
 
     // Validação básica
-    if (!nome_cliente) {
+    if (!renda_cliente) {
       return res.status(400).json({
         error: 'O nome do cliente é obrigatório'
       });
     }
 
     const result = await query(
-      'INSERT INTO cliente (id_cliente, nome_cliente) VALUES ($1, $2) RETURNING *',
-      [id_cliente, nome_cliente]
+      'INSERT INTO cliente (pessoa_cpf_pessoa, renda_cliente, data_cadastro_cliente) VALUES ($1, $2, $3) RETURNING *',
+      [pessoa_cpf_pessoa, renda_cliente, data_cadastro_cliente]
     );
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error('Erro ao criar cliente:', error);
 
-   
+
 
     // Verifica se é erro de violação de constraint NOT NULL
     if (error.code === '23502') {
@@ -59,13 +59,13 @@ exports.obterCliente = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
 
-   // console.log("estou no obter cliente id="+ id);
+    // console.log("estou no obter cliente id="+ id);
     if (isNaN(id)) {
       return res.status(400).json({ error: 'ID deve ser um número válido' });
     }
 
     const result = await query(
-      'SELECT * FROM cliente WHERE id_cliente = $1',
+      'SELECT * FROM cliente WHERE pessoa_cpf_pessoa = $1',
       [id]
     );
 
@@ -85,12 +85,12 @@ exports.obterCliente = async (req, res) => {
 exports.atualizarCliente = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const { nome_cliente} = req.body;
+    const { renda_cliente } = req.body;
 
-   
+
     // Verifica se a cliente existe
     const existingPersonResult = await query(
-      'SELECT * FROM cliente WHERE id_cliente = $1',
+      'SELECT * FROM cliente WHERE pessoa_cpf_pessoa = $1',
       [id]
     );
 
@@ -101,20 +101,20 @@ exports.atualizarCliente = async (req, res) => {
     // Constrói a query de atualização dinamicamente para campos não nulos
     const currentPerson = existingPersonResult.rows[0];
     const updatedFields = {
-      nome_cliente: nome_cliente !== undefined ? nome_cliente : currentPerson.nome_cliente     
+      renda_cliente: renda_cliente !== undefined ? renda_cliente : currentPerson.renda_cliente
     };
 
     // Atualiza a cliente
     const updateResult = await query(
-      'UPDATE cliente SET nome_cliente = $1 WHERE id_cliente = $2 RETURNING *',
-      [updatedFields.nome_cliente,  id]
+      'UPDATE cliente SET renda_cliente = $1, data_cadastro_cliente = $2 WHERE pessoa_cpf_pessoa = $3 RETURNING *',
+      [updatedFields.renda_cliente, updatedFields.data_cadastro_cliente, id]
     );
 
     res.json(updateResult.rows[0]);
   } catch (error) {
     console.error('Erro ao atualizar cliente:', error);
 
-  
+
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 }
@@ -124,7 +124,7 @@ exports.deletarCliente = async (req, res) => {
     const id = parseInt(req.params.id);
     // Verifica se a cliente existe
     const existingPersonResult = await query(
-      'SELECT * FROM cliente WHERE id_cliente = $1',
+      'SELECT * FROM cliente WHERE pessoa_cpf_pessoa = $1',
       [id]
     );
 
@@ -134,7 +134,7 @@ exports.deletarCliente = async (req, res) => {
 
     // Deleta a cliente (as constraints CASCADE cuidarão das dependências)
     await query(
-      'DELETE FROM cliente WHERE id_cliente = $1',
+      'DELETE FROM cliente WHERE pessoa_cpf_pessoa = $1',
       [id]
     );
 
