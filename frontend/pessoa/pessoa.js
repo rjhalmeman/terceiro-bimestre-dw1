@@ -61,16 +61,16 @@ function bloquearCampos(bloquearPrimeiro) {
 // Função para limpar formulário
 function limparFormulario() {
     form.reset();
-    document.getElementById('checkboxFuncionario').checked = false;    
+    document.getElementById('checkboxFuncionario').checked = false;
     document.getElementById('salario_funcionario').value = '';
     document.getElementById('cargo_id_cargo').value = '';
     document.getElementById('porcentagem_comissao_funcionario').value = '';
 
 
-    document.getElementById('checkboxCliente').checked = false;    
+    document.getElementById('checkboxCliente').checked = false;
     document.getElementById('renda_cliente').value = '';
     document.getElementById('data_cadastro_cliente').value = '';
-    
+
 }
 
 
@@ -119,13 +119,14 @@ async function funcaoEhFuncionario(pessoaId) {
         const response = await fetch(`${API_BASE_URL}/funcionario/${pessoaId}`);
 
         if (response.status === 404) {
+            console.log('Não é funcionario');
             return { ehFuncionario: false };
         }
 
         if (response.status === 200) {
             const funcionarioData = await response.json();
             return {
-                ehFuncionario: true, 
+                ehFuncionario: true,
                 salario_funcionario: funcionarioData.salario_funcionario,
                 cargo_id_cargo: funcionarioData.cargo_id_cargo,
                 porcentagem_comissao_funcionario: funcionarioData.porcentagem_comissao_funcionario
@@ -149,15 +150,16 @@ async function funcaoEhCliente(pessoaId) {
         const response = await fetch(`${API_BASE_URL}/cliente/${pessoaId}`);
 
         if (response.status === 404) {
+            console.log('Não é cliente');
             return { ehCliente: false };
         }
 
         if (response.status === 200) {
             const clienteData = await response.json();
             return {
-                ehCliente: true, 
+                ehCliente: true,
                 renda_cliente: clienteData.renda_cliente,
-                data_cadastro_cliente: clienteData.data_cadastro_cliente                
+                data_cadastro_cliente: clienteData.data_cadastro_cliente
             };
         }
 
@@ -189,14 +191,14 @@ async function buscarPessoa() {
     try {
         const response = await fetch(`${API_BASE_URL}/pessoa/${id}`);
 
-        if (response.ok) {
+        if (response.ok) { //mostrar os dados da pessoa no formulário
             const pessoa = await response.json();
             preencherFormulario(pessoa);
 
             mostrarBotoes(true, false, true, true, false, false);// mostrarBotoes(btBuscar, btIncluir, btAlterar, btExcluir, btSalvar, btCancelar)
             mostrarMensagem('Pessoa encontrada!', 'success');
 
-        } else if (response.status === 404) {
+        } else if (response.status === 404) { //não encontrada essa pessoa
             limparFormulario();
             searchId.value = id;
             mostrarBotoes(true, true, false, false, false, false); //mostrarBotoes(btBuscar, btIncluir, btAlterar, btExcluir, btSalvar, btCancelar)
@@ -211,43 +213,11 @@ async function buscarPessoa() {
         mostrarMensagem('Erro ao buscar pessoa', 'error');
     }
 
-    // Verifica se a pessoa é funcionario
-    const oFuncionario = await funcaoEhFuncionario(id);
 
-    if (oFuncionario.ehFuncionario) {
-        // alert('É funcionario: ' + oFuncionario.ehFuncionario + ' - ' + oFuncionario.salario + ' - ' + oFuncionario.departamento);
-        document.getElementById('checkboxFuncionario').checked = true;
-        document.getElementById('cargo_id_cargo').value = oFuncionario.cargo_id_cargo;
-        document.getElementById('salario_funcionario').value = oFuncionario.salario_funcionario;
-        document.getElementById('porcentagem_comissao_funcionario').value = oFuncionario.porcentagem_comissao_funcionario;
-        
-    } else {
-        // Não é funcionario
-        document.getElementById('checkboxFuncionario').checked = false;
-        document.getElementById('cargo_id_cargo').value = '';
-        document.getElementById('salario_funcionario').value = '';
-        document.getElementById('porcentagem_comissao_funcionario').value = '';
-    }
-
-    //Verifica se a pessoa é cliente
-    const oCliente = await funcaoEhCliente(id);
-
-    if (oCliente.ehCliente) {
-        // alert('É cliente: ' + oCliente.ehCliente + ' - ' + oCliente.renda + ' - ' + oCliente.data_cadastro);
-        document.getElementById('checkboxCliente').checked = true;
-        document.getElementById('renda_cliente').value = oCliente.renda_cliente;
-        document.getElementById('data_cadastro_cliente').value = converterDataParaFormatoYyyyMmDd(oCliente.data_cadastro_cliente); 
-        
-    } else {
-        // Não é cliente
-        document.getElementById('checkboxCliente').checked = false;
-        document.getElementById('renda_cliente').value = '';
-        document.getElementById('data_cadastro_cliente').value = '';
-    }      
 }
 
-// Função para preencher formulário com dados da pessoa
-function preencherFormulario(pessoa) {
+// Função para preencher formulário com dados da pessoa, se for funcionario ou cliente, preencher também os dados respectivos.
+async function preencherFormulario(pessoa) {
     currentPersonId = pessoa.cpf_pessoa;
     searchId.value = pessoa.cpf_pessoa;
     document.getElementById('nome_pessoa').value = pessoa.nome_pessoa || '';
@@ -262,8 +232,43 @@ function preencherFormulario(pessoa) {
     document.getElementById('endereco_pessoa').value = pessoa.endereco_pessoa || '';
     document.getElementById('senha_pessoa').value = pessoa.senha_pessoa || '';
     document.getElementById('email_pessoa').value = pessoa.email_pessoa || '';
-    
-    
+
+
+    // Verifica se a pessoa é funcionario
+    const ehFuncionarioEssaPessoa = await funcaoEhFuncionario(currentPersonId);
+
+    console.log('Resultado função é funcionario:', ehFuncionarioEssaPessoa);
+
+    if (ehFuncionarioEssaPessoa.ehFuncionario) {
+        // alert('É funcionario: ' + oFuncionario.ehFuncionario + ' - ' + oFuncionario.salario + ' - ' + oFuncionario.departamento);
+        document.getElementById('checkboxFuncionario').checked = true;
+        document.getElementById('cargo_id_cargo').value = ehFuncionarioEssaPessoa.cargo_id_cargo;
+        document.getElementById('salario_funcionario').value = ehFuncionarioEssaPessoa.salario_funcionario;
+        document.getElementById('porcentagem_comissao_funcionario').value = ehFuncionarioEssaPessoa.porcentagem_comissao_funcionario;
+
+    } else {
+        // Não é funcionario
+        document.getElementById('checkboxFuncionario').checked = false;
+        document.getElementById('cargo_id_cargo').value = '';
+        document.getElementById('salario_funcionario').value = '';
+        document.getElementById('porcentagem_comissao_funcionario').value = '';
+    }
+
+    //Verifica se a pessoa é cliente
+    const ehClienteEssaPessoa = await funcaoEhCliente(currentPersonId);
+    console.log('Resultado função é cliente:', ehClienteEssaPessoa);
+    if (ehClienteEssaPessoa.ehCliente) {
+        // alert('É cliente: ' + oCliente.ehCliente + ' - ' + oCliente.renda + ' - ' + oCliente.data_cadastro);
+        document.getElementById('checkboxCliente').checked = true;
+        document.getElementById('renda_cliente').value = ehClienteEssaPessoa.renda_cliente;
+        document.getElementById('data_cadastro_cliente').value = converterDataParaFormatoYyyyMmDd(ehClienteEssaPessoa.data_cadastro_cliente);
+
+    } else {
+        // Não é cliente
+        document.getElementById('checkboxCliente').checked = false;
+        document.getElementById('renda_cliente').value = '';
+        document.getElementById('data_cadastro_cliente').value = '';
+    }
 }
 
 // Função para incluir pessoa
@@ -302,219 +307,221 @@ async function excluirPessoa() {
     operacao = 'excluir';
 }
 
-async function salvarOperacao() {
-    //console.log('Operação:', operacao + ' - currentPersonId: ' + currentPersonId + ' - searchId: ' + searchId.value);
 
+async function salvarOperacao() {
+    // montar objeto pessoa com os nomes que o backend espera
     const formData = new FormData(form);
     const pessoa = {
-        cpf_pessoa: searchId.value,
+        cpf_pessoa: searchId.value.trim(),
         nome_pessoa: formData.get('nome_pessoa'),
-        data_nascimento: formData.get('data_nascimento') || null,
-        email_pessoa: formData.get('endereco_pessoa'),
+        // ajuste o nome do campo de data conforme seu backend: data_nascimento_pessoa ou data_nascimento
+        data_nascimento_pessoa: formData.get('data_nascimento') || null,
+        endereco_pessoa: formData.get('endereco_pessoa'),
         senha_pessoa: formData.get('senha_pessoa'),
         email_pessoa: formData.get('email_pessoa')
     };
 
+    // capturar dados do funcionario só se checkbox marcado
     let funcionario = null;
     if (document.getElementById('checkboxFuncionario').checked) {
         funcionario = {
             pessoa_cpf_pessoa: pessoa.cpf_pessoa,
-            salario_funcionario: document.getElementById('cargo_id_cargo').value,
-            cargo_id_cargo: document.getElementById('departamentoFuncionario').value,
+            // use os IDs corretos dos inputs:
+            salario_funcionario: document.getElementById('salario_funcionario').value,
+            cargo_id_cargo: document.getElementById('cargo_id_cargo').value,
             porcentagem_comissao_funcionario: document.getElementById('porcentagem_comissao_funcionario').value
-        }
+        };
     }
+    const caminhoFunc = `${API_BASE_URL}/funcionario/${currentPersonId}`;
 
-    // é cliente
-    let ehCliente = document.getElementById('checkboxCliente').checked; //true ou false
+    // capturar dados do cliente só se checkbox marcado
+    let cliente = null;
+    if (document.getElementById('checkboxCliente').checked) {
+        cliente = {
+            pessoa_cpf_pessoa: pessoa.cpf_pessoa,
+            renda_cliente: document.getElementById('renda_cliente').value,
+            data_cadastro_cliente: document.getElementById('data_cadastro_cliente').value || null
+        };
+    }
+    const caminhoCliente = `${API_BASE_URL}/cliente/${currentPersonId}`;
 
-    
-    let responseFuncionario = null;
-    let responsePessoa = null;
     try {
-        if (operacao === 'incluir') {
-            responseFuncionario = await fetch(`${API_BASE_URL}/pessoa`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(pessoa)
-            });
-            responsePessoa = responseFuncionario;
-            if (document.getElementById('checkboxFuncionario').checked) {
-                responseFuncionario = await fetch(`${API_BASE_URL}/funcionario`, {
+        let respPessoa = null;
+        switch (operacao) {
+            case 'incluir':
+                // criar pessoa
+                respPessoa = await fetch(`${API_BASE_URL}/pessoa`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(funcionario)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pessoa)
                 });
-            }
-            let responseCliente = null;
-            if (ehCliente) {
-                const cliente = {
-                    pessoa_cpf_pessoa: pessoa.cpf_pessoa
-                };
-                responseCliente = await fetch(`${API_BASE_URL}/cliente`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(cliente)
-                });
-            }         
 
-        } else if (operacao === 'alterar') {
-            responseFuncionario = await fetch(`${API_BASE_URL}/pessoa/${currentPersonId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(pessoa)
-            });
-            responsePessoa = responseFuncionario;
-
-            if (ehCliente) {
-                //se DEIXOU de ser cliente, excluir da tabela cliente
-                const caminhoRota = `${API_BASE_URL}/cliente/${currentPersonId}`;
-
-                let respObterCliente = await fetch(caminhoRota);
-                //    console.log('Resposta ao obter cliente ao alterar pessoa: ' + respObterCliente.status);
-                let cliente = null;
-                if (respObterCliente.status === 404) {
-                    //incluir cliente
-                    cliente = {
-                        pessoa_cpf_pessoa: pessoa.cpf_pessoa
-                    }
-                };
-                
-                respObterCliente = await fetch(`${API_BASE_URL}/cliente`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(cliente)
-                });
-            } else {
-                //se DEIXOU de ser cliente, excluir da tabela cliente
-                const caminhoRota = `${API_BASE_URL}/cliente/${currentPersonId}`;
-                let respObterCliente = await fetch(caminhoRota);
-                // console.log('Resposta ao obter cliente para exclusão: ' + respObterCliente.status);
-                if (respObterCliente.status === 200) {
-                    //existe, pode excluir
-                    respObterCliente = await fetch(caminhoRota, {
-                        method: 'DELETE'
-                    });
+                if (!respPessoa.ok) {
+                    const err = await respPessoa.json().catch(() => ({ error: 'erro' }));
+                    throw new Error('Erro ao criar pessoa: ' + (err.error || respPessoa.status));
                 }
-            }
 
-           
-
-            if (document.getElementById('checkboxFuncionario').checked) {
-                //   console.log('Vai alterar funcionario: ' + JSON.stringify(funcionario));
-                const caminhoRota = `${API_BASE_URL}/funcionario/${currentPersonId}`;
-                //console.log('Caminho da rota para funcionario: ' + caminhoRota);
-                //obter o funcionario para ver se existe
-                const respObterFuncionario = await fetch(caminhoRota);
-                if (respObterFuncionario.status === 404) {
-                    //não existe, incluir       
-                    responseFuncionario = await fetch(`${API_BASE_URL}/funcionario`, {
+                // criar funcionario se marcado
+                if (funcionario) {
+                    const respFunc = await fetch(`${API_BASE_URL}/funcionario`, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(funcionario)
                     });
+                    if (!respFunc.ok) {
+                        console.warn('Aviso: criação de funcionario retornou', respFunc.status);
+                    }
+                }
+
+                // criar cliente se marcado
+                if (cliente) {
+                    const respCli = await fetch(`${API_BASE_URL}/cliente`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(cliente)
+                    });
+                    if (!respCli.ok) {
+                        console.warn('Aviso: criação de cliente retornou', respCli.status);
+                    }
+                }
+
+                mostrarMensagem('Pessoa incluída com sucesso!', 'success');
+                limparFormulario();
+                carregarPessoas();
+                break;
+            case 'alterar':
+                console.log('Alterar pessoa - currentPersonId: ' + currentPersonId);
+                // console.log('Dados pessoa:', pessoa);
+                // console.log('Dados funcionario:', funcionario);
+                // console.log('Dados cliente:', cliente);
+                // alterar pessoa
+                respPessoa = await fetch(`${API_BASE_URL}/pessoa/${currentPersonId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pessoa)
+                });
+                if (!respPessoa.ok) {
+                    const err = await respPessoa.json().catch(() => ({ error: 'erro' }));
+                    throw new Error('Erro ao alterar pessoa: ' + (err.error || respPessoa.status));
+                }
+
+                // tratar cliente: só inserir se NÃO existir; só deletar se EXISTIR
+
+                //if checkboxCliente marcado -> cliente deve existir
+                if (document.getElementById('checkboxCliente').checked) {
+                    // cliente deve existir: verificar se existe
+                    const respVerifCli = await fetch(caminhoCliente);
+                    if (respVerifCli.status === 404) {
+                        // não existe, criar
+                        const respCriarCli = await fetch(`${API_BASE_URL}/cliente`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(cliente)
+                        });
+                        if (!respCriarCli.ok) console.warn('Erro ao criar cliente no alterar', respCriarCli.status);
+                    } else if (respVerifCli.status === 200) {
+                        // já existe, alterar
+                        const respAlterarCli = await fetch(caminhoCliente, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(cliente)
+                        });
+                        if (!respAlterarCli.ok) console.warn('Erro ao alterar cliente no alterar', respAlterarCli.status);
+                    } else {
+                        console.warn('Erro ao verificar cliente no alterar', respVerifCli.status);
+                    }
                 } else {
-                    //já existe, alterar
-                    responseFuncionario = await fetch(caminhoRota, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(funcionario)
-                    });
+                    // cliente não deve existir: verificar se existe
+                    const respVerifCli = await fetch(caminhoCliente);
+                    if (respVerifCli.status === 200) {
+                        // existe, deletar
+                        const respDel = await fetch(caminhoCliente, { method: 'DELETE' });
+                        if (!respDel.ok) console.warn('Erro ao excluir cliente no alterar', respDel.status);
+                    }
                 }
-            } else {
-                //se DEIXOU de ser funcionario, excluir da tabela funcionario
-                const caminhoRota = `${API_BASE_URL}/funcionario/${currentPersonId}`;
-                const respObterFuncionario = await fetch(caminhoRota);
-                //    console.log('Resposta ao obter funcionario para exclusão: ' + respObterFuncionario.status);
-                if (respObterFuncionario.status === 200) {
-                    //existe, pode excluir
-                    responseFuncionario = await fetch(caminhoRota, {
-                        method: 'DELETE'
-                    });
+
+
+                // tratar funcionario de forma similar
+                if (document.getElementById('checkboxFuncionario').checked) {
+                    // funcionario deve existir: verificar se existe
+                    const respVerifFunc = await fetch(caminhoFunc);
+                    if (respVerifFunc.status === 404) {
+                        // não existe, criar
+                        const respCriarFunc = await fetch(`${API_BASE_URL}/funcionario`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(funcionario)
+                        });
+                        if (!respCriarFunc.ok) console.warn('Erro ao criar funcionario no alterar', respCriarFunc.status);
+                    } else if (respVerifFunc.status === 200) {
+                        // já existe, alterar
+                        const respAlterarFunc = await fetch(caminhoFunc, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(funcionario)
+                        });
+                        if (!respAlterarFunc.ok) console.warn('Erro ao alterar funcionario no alterar', respAlterarFunc.status);
+                    } else {
+                        console.warn('Erro ao verificar funcionario no alterar', respVerifFunc.status);
+                    }
+                } else {
+                    // funcionario não deve existir: verificar se existe
+                    const respVerifFunc = await fetch(caminhoFunc);
+                    if (respVerifFunc.status === 200) {
+                        // existe, deletar
+                        const respDel = await fetch(caminhoFunc, { method: 'DELETE' });
+                        if (!respDel.ok) console.warn('Erro ao excluir funcionario no alterar', respDel.status);
+                    }
                 }
-            }
-        } else if (operacao === 'excluir') {
-            //se é cliente, excluir da tabela cliente primeiro
-            let responseCliente = null;
-            const caminhoRotaCliente = `${API_BASE_URL}/cliente/${currentPersonId}`;
-            const respObterCliente = await fetch(caminhoRotaCliente);
-            //console.log('Resposta ao obter cliente para exclusão: ' + respObterCliente.status);
-            if (respObterCliente.status === 200) {
-                //existe, pode excluir
-                responseCliente = await fetch(caminhoRotaCliente, {
-                    method: 'DELETE'
-                });
-            }
 
-             //se é avaliado, excluir da tabela avaliado primeiro
-            let responseAvaliado = null;
-            const caminhoRotaAvaliado = `${API_BASE_URL}/avaliado/${currentPersonId}`;
-            const respObterAvaliado = await fetch(caminhoRotaAvaliado);
-            //console.log('Resposta ao obter avaliado para exclusão: ' + respObterAvaliado.status);
-            if (respObterAvaliado.status === 200) {
-                //existe, pode excluir
-                responseAvaliado = await fetch(caminhoRotaAvaliado, {
-                    method: 'DELETE'
-                });
-            }
+                console.log('Fim alterar pessoa - currentPersonId: ' + currentPersonId);
 
 
-            //verificar se é funcionario, se for, excluir da tabela funcionario primeiro
-            const caminhoRota = `${API_BASE_URL}/funcionario/${currentPersonId}`;
-            const respObterFuncionario = await fetch(caminhoRota);
-            //    console.log('Resposta ao obter funcionario para exclusão: ' + respObterFuncionario.status);
-            if (respObterFuncionario.status === 200) {
-                //existe, pode excluir
-                responseFuncionario = await fetch(caminhoRota, {
-                    method: 'DELETE'
-                });
-            }
-            //agora exclui da tabela pessoa
-            // console.log('Excluindo pessoa com ID:', currentPersonId);
-            responseFuncionario = await fetch(`${API_BASE_URL}/pessoa/${currentPersonId}`, {
-                method: 'DELETE'
-            });
-            responsePessoa = responseFuncionario;
-            //  console.log('Pessoa excluída' + responseFuncionario.status);
+                mostrarMensagem('Pessoa alterada com sucesso!', 'success');
+                limparFormulario();
+                carregarPessoas();
+                break;
+            case 'excluir':
+
+                // excluir cliente se existir
+
+                const respCli = await fetch(caminhoCliente);
+                if (respCli.status === 200) {
+                    await fetch(caminhoCliente, { method: 'DELETE' });
+                }
+
+                // excluir funcionario se existir
+
+                const respFuncObter = await fetch(caminhoFunc);
+                if (respFuncObter.status === 200) {
+                    await fetch(caminhoFunc, { method: 'DELETE' });
+                }
+
+                // excluir pessoa
+                const respDelPessoa = await fetch(`${API_BASE_URL}/pessoa/${currentPersonId}`, { method: 'DELETE' });
+                if (!respDelPessoa.ok) {
+                    const err = await respDelPessoa.json().catch(() => ({ error: 'erro' }));
+                    throw new Error('Erro ao excluir pessoa: ' + (err.error || respDelPessoa.status));
+                }
+
+                mostrarMensagem('Pessoa excluída com sucesso!', 'success');
+                limparFormulario();
+                carregarPessoas();
+                break;
         }
 
-        if (responsePessoa.ok && (operacao === 'incluir' || operacao === 'alterar')) {
-
-            mostrarMensagem('Operação ' + operacao + ' realizada com sucesso!', 'success');
-            limparFormulario();
-            carregarPessoas();
-
-        } else if (operacao !== 'excluir') {
-            const error = await responsePessoa.json();
-            mostrarMensagem(error.error || 'Erro ao incluir pessoa', 'error');
-        } else {
-            mostrarMensagem('Pessoa excluída com sucesso!', 'success');
-            limparFormulario();
-            carregarPessoas();
-        }
     } catch (error) {
-        console.error('Erro:', error);
-        mostrarMensagem('Erro ao incluir ou alterar a pessoa', 'error');
+        console.error('Erro salvarOperacao:', error);
+        mostrarMensagem(error.message || 'Erro ao processar operação', 'error');
+    } finally {
+        mostrarBotoes(true, false, false, false, false, false);
+        bloquearCampos(false);
+        document.getElementById('searchId').focus();
     }
-
-    mostrarBotoes(true, false, false, false, false, false);// mostrarBotoes(btBuscar, btIncluir, btAlterar, btExcluir, btSalvar, btCancelar)
-    bloquearCampos(false);//libera pk e bloqueia os demais campos
-    document.getElementById('searchId').focus();
 }
+
+
+
 // Função para cancelar operação
 function cancelarOperacao() {
     limparFormulario();
