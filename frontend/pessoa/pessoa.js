@@ -96,7 +96,7 @@ function converterDataParaISO(dataString) {
     return new Date(dataString).toISOString();
 }
 
-function converterDataParaFormatoYyyyMmDd(isoDateString) {
+function converterDataParaFormatoYYYYMMDD(isoDateString) {
     if (!isoDateString || typeof isoDateString !== 'string') {
         return ''; // Retorna vazio se a entrada for nula ou não for string
     }
@@ -222,9 +222,12 @@ async function preencherFormulario(pessoa) {
     searchId.value = pessoa.cpf_pessoa;
     document.getElementById('nome_pessoa').value = pessoa.nome_pessoa || '';
     // Formatação da data para input type="date"
-    if (pessoa.data_nascimento) {
-        const data = new Date(pessoa.data_nascimento);
-        const dataFormatada = data.toISOString().split('T')[0];
+    //alert todos os dados da pessoa
+    //alert('Dados da pessoa: ' + JSON.stringify(pessoa));
+
+    if (pessoa.data_nascimento_pessoa) {
+        const data = new Date(pessoa.data_nascimento_pessoa);
+        const dataFormatada = converterDataParaFormatoYYYYMMDD(data.toISOString());
         document.getElementById('data_nascimento').value = dataFormatada;
     } else {
         document.getElementById('data_nascimento').value = '';
@@ -261,7 +264,7 @@ async function preencherFormulario(pessoa) {
         // alert('É cliente: ' + oCliente.ehCliente + ' - ' + oCliente.renda + ' - ' + oCliente.data_cadastro);
         document.getElementById('checkboxCliente').checked = true;
         document.getElementById('renda_cliente').value = ehClienteEssaPessoa.renda_cliente;
-        document.getElementById('data_cadastro_cliente').value = converterDataParaFormatoYyyyMmDd(ehClienteEssaPessoa.data_cadastro_cliente);
+        document.getElementById('data_cadastro_cliente').value = converterDataParaFormatoYYYYMMDD(ehClienteEssaPessoa.data_cadastro_cliente);
 
     } else {
         // Não é cliente
@@ -315,7 +318,7 @@ async function salvarOperacao() {
         cpf_pessoa: searchId.value.trim(),
         nome_pessoa: formData.get('nome_pessoa'),
         // ajuste o nome do campo de data conforme seu backend: data_nascimento_pessoa ou data_nascimento
-        data_nascimento_pessoa: formData.get('data_nascimento') || null,
+        data_nascimento_pessoa: converterDataParaISO(formData.get('data_nascimento')) || null,
         endereco_pessoa: formData.get('endereco_pessoa'),
         senha_pessoa: formData.get('senha_pessoa'),
         email_pessoa: formData.get('email_pessoa')
@@ -325,10 +328,9 @@ async function salvarOperacao() {
     let funcionario = null;
     if (document.getElementById('checkboxFuncionario').checked) {
         funcionario = {
-            pessoa_cpf_pessoa: pessoa.cpf_pessoa,
-            // use os IDs corretos dos inputs:
+            pessoa_cpf_pessoa: pessoa.cpf_pessoa,            
             salario_funcionario: document.getElementById('salario_funcionario').value,
-            cargo_id_cargo: document.getElementById('cargo_id_cargo').value,
+            cargo_id_cargo: parseInt(document.getElementById('cargo_id_cargo').value),
             porcentagem_comissao_funcionario: document.getElementById('porcentagem_comissao_funcionario').value
         };
     }
@@ -413,7 +415,7 @@ async function salvarOperacao() {
                     const respVerifCli = await fetch(caminhoCliente);
                     if (respVerifCli.status === 404) {
                         // não existe, criar
-                        const respCriarCli = await fetch(`${API_BASE_URL}/cliente`, {
+                        const respCriarCli = await fetch(`${API_BASE_URL}/cliente/`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(cliente)
@@ -430,9 +432,10 @@ async function salvarOperacao() {
                     } else {
                         console.warn('Erro ao verificar cliente no alterar', respVerifCli.status);
                     }
-                } else {
-                    // cliente não deve existir: verificar se existe
+                } else { //checkbox não marcado
+                    // não pode estar na tabela cliente, remover se existir
                     const respVerifCli = await fetch(caminhoCliente);
+                    console.log('Verificação cliente para possível exclusão, status:', respVerifCli.status);
                     if (respVerifCli.status === 200) {
                         // existe, deletar
                         const respDel = await fetch(caminhoCliente, { method: 'DELETE' });
@@ -444,10 +447,13 @@ async function salvarOperacao() {
                 // tratar funcionario de forma similar
                 if (document.getElementById('checkboxFuncionario').checked) {
                     // funcionario deve existir: verificar se existe
+                    console.log('Verificando se funcionario existe para possível criação/alteração  '+ caminhoFunc);
+                    console.log('Dados funcionario para possível criação/alteração:', funcionario);
+
                     const respVerifFunc = await fetch(caminhoFunc);
                     if (respVerifFunc.status === 404) {
                         // não existe, criar
-                        const respCriarFunc = await fetch(`${API_BASE_URL}/funcionario`, {
+                        const respCriarFunc = await fetch(`${API_BASE_URL}/funcionario/`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(funcionario)
@@ -464,8 +470,8 @@ async function salvarOperacao() {
                     } else {
                         console.warn('Erro ao verificar funcionario no alterar', respVerifFunc.status);
                     }
-                } else {
-                    // funcionario não deve existir: verificar se existe
+                } else { //checkbox não marcado
+                    //excluir se existir na tabela funcionario
                     const respVerifFunc = await fetch(caminhoFunc);
                     if (respVerifFunc.status === 200) {
                         // existe, deletar
@@ -561,7 +567,7 @@ function renderizarTabelaPessoas(pessoas) {
                         </button>
                     </td>
                     <td>${pessoa.nome_pessoa}</td>
-                    <td>${formatarData(pessoa.data_nascimento)}</td>                 
+                    <td>${formatarData(pessoa.data_nascimento_pessoa)}</td>                 
                     <td>${pessoa.endereco_pessoa}</td>
                     <td>${pessoa.senha_pessoa}</td>
                     <td>${pessoa.email_pessoa}</td>

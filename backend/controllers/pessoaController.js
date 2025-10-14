@@ -53,7 +53,7 @@ exports.criarPessoa = async (req, res) => {
 
     const result = await query(
       'INSERT INTO pessoa (cpf_pessoa, nome_pessoa, data_nascimento_pessoa,endereco_pessoa,senha_pessoa, email_pessoa ) VALUES ($1, $2, $3, $4, $5,$6) RETURNING *',
-      [cpf_pessoa, nome_pessoa, data_nascimento_pessoa,endereco_pessoa,senha_pessoa, email_pessoa]
+      [cpf_pessoa, nome_pessoa, data_nascimento_pessoa, endereco_pessoa, senha_pessoa, email_pessoa]
     );
 
     res.status(201).json(result.rows[0]);
@@ -103,9 +103,11 @@ exports.obterPessoa = async (req, res) => {
 }
 
 exports.atualizarPessoa = async (req, res) => {
+  //console.log('Atualizando pessoa com dados:', req.body);
+
   try {
     const id = parseInt(req.params.id);
-    const { nome_pessoa, data_nascimento_pessoa,endereco_pessoa,senha_pessoa, email_pessoa } = req.body;
+    const { nome_pessoa, data_nascimento_pessoa, endereco_pessoa, senha_pessoa, email_pessoa } = req.body;
 
     // Validação de email se fornecido
     if (email_pessoa) {
@@ -133,14 +135,14 @@ exports.atualizarPessoa = async (req, res) => {
       data_nascimento_pessoa: data_nascimento_pessoa !== undefined ? data_nascimento_pessoa : currentPerson.data_nascimento_pessoa,
       endereco_pessoa: endereco_pessoa !== undefined ? endereco_pessoa : currentPerson.endereco_pessoa,
       senha_pessoa: senha_pessoa !== undefined ? senha_pessoa : currentPerson.senha_pessoa,
-      email_pessoa: email_pessoa !== undefined ? email_pessoa : currentPerson.email_pessoa 
+      email_pessoa: email_pessoa !== undefined ? email_pessoa : currentPerson.email_pessoa
     };
-    
+
     //cpf_pessoa, nome_pessoa, data_nascimento_pessoa,endereco_pessoa,senha_pessoa, email_pessoa
     // Atualiza a pessoa
     const updateResult = await query(
       'UPDATE pessoa SET nome_pessoa = $1,  data_nascimento_pessoa = $2, endereco_pessoa = $3, senha_pessoa=$4, email_pessoa=$5  WHERE cpf_pessoa = $6 RETURNING *',
-      [updatedFields.nome_pessoa, updatedFields.data_nascimento_pessoa, updatedFields.endereco_pessoa,updatedFields.senha_pessoa,updatedFields.email_pessoa, id]
+      [updatedFields.nome_pessoa, updatedFields.data_nascimento_pessoa, updatedFields.endereco_pessoa, updatedFields.senha_pessoa, updatedFields.email_pessoa, id]
     );
 
     res.json(updateResult.rows[0]);
