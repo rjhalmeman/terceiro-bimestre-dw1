@@ -83,25 +83,31 @@ exports.obterCliente = async (req, res) => {
 }
 
 exports.atualizarCliente = async (req, res) => {
+
+  // console.log('Atualizando cliente com dados:', req.body);
+
   try {
     const id = parseInt(req.params.id);
-    const { renda_cliente } = req.body;
+    const { renda_cliente, data_cadastro_cliente } = req.body;
 
 
-    // Verifica se a cliente existe
-    const existingPersonResult = await query(
-      'SELECT * FROM cliente WHERE pessoa_cpf_pessoa = $1',
-      [id]
-    );
+    // // Verifica se a cliente existe
+    // const existingPersonResult = await query(
+    //   'SELECT * FROM cliente WHERE pessoa_cpf_pessoa = $1',
+    //   [id]
+    // );
 
-    if (existingPersonResult.rows.length === 0) {
-      return res.status(404).json({ error: 'Cliente não encontrada' });
-    }
+    // if (existingPersonResult.rows.length === 0) {
+    //   return res.status(404).json({ error: 'Cliente não encontrada' });
+    // }
 
     // Constrói a query de atualização dinamicamente para campos não nulos
-    const currentPerson = existingPersonResult.rows[0];
+    // const dadosDoClienteVindosViaRequisicao = existingPersonResult.rows[0];
+
+
     const updatedFields = {
-      renda_cliente: renda_cliente !== undefined ? renda_cliente : currentPerson.renda_cliente
+      renda_cliente: renda_cliente,
+      data_cadastro_cliente: data_cadastro_cliente
     };
 
     // Atualiza a cliente
@@ -120,36 +126,45 @@ exports.atualizarCliente = async (req, res) => {
 }
 
 exports.deletarCliente = async (req, res) => {
+  const id = parseInt(req.params.id);
+
   try {
-    const id = parseInt(req.params.id);
-    // Verifica se a cliente existe
+
+    // 1. Verifica se o cliente existe
     const existingPersonResult = await query(
       'SELECT * FROM cliente WHERE pessoa_cpf_pessoa = $1',
       [id]
     );
 
     if (existingPersonResult.rows.length === 0) {
-      return res.status(404).json({ error: 'Cliente não encontrada' });
+      return res.status(404).json({ error: 'Cliente não encontrado' });
     }
 
-    // Deleta a cliente (as constraints CASCADE cuidarão das dependências)
+    // 2. Deleta o cliente
     await query(
       'DELETE FROM cliente WHERE pessoa_cpf_pessoa = $1',
       [id]
     );
 
+    // 3. Resposta de sucesso (204 No Content - Sem corpo)
     res.status(204).send();
-  } catch (error) {
-    console.error('Erro ao deletar cliente:', error);
 
-    // Verifica se é erro de violação de foreign key (dependências)
+  } catch (error) {
+
+    // console.error('Erro ao deletar cliente:', error);
+
+    // Verifica se é erro de violação de foreign key (código 23503)
     if (error.code === '23503') {
-      return res.status(400).json({
-        error: 'Não é possível deletar cliente com dependências associadas'
+      // Retorna 409 Conflict, que é o mais apropriado para violações de integridade
+      return res.status(409).json({
+        // Mensagem de erro mais descritiva baseada no detalhe do DB
+        error: 'Erro de integridade referencial - o cliente não pode ser excluído, pois está associado a outras entidades (ex: pedidos).'
+        // Opcional: detail: error.detail // Você pode enviar o detalhe técnico se precisar no frontend
       });
     }
 
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    // Erros internos inesperados
+    res.status(500).json({ error: 'Erro interno do servidor ao tentar excluir o cliente.' });
   }
 }
 

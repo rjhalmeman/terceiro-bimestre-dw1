@@ -22,7 +22,7 @@ exports.listarFuncionarios = async (req, res) => {
 
 
 exports.criarFuncionario = async (req, res) => {
- //   console.log('Criando funcionario com dados:', req.body);
+  //   console.log('Criando funcionario com dados:', req.body);
   try {
     const { pessoa_cpf_pessoa, salario_funcionario, cargo_id_cargo, porcentagem_comissao_funcionario } = req.body;
 
@@ -83,7 +83,7 @@ exports.obterFuncionario = async (req, res) => {
 }
 
 exports.atualizarFuncionario = async (req, res) => {
-  //console.log('Atualizando funcionario com dados:', req.body);
+//  console.log('Atualizando funcionario com dados:', req.body);
   try {
     const id = parseInt(req.params.id);
     const { salario_funcionario } = req.body;
@@ -96,14 +96,30 @@ exports.atualizarFuncionario = async (req, res) => {
     );
 
     if (existingPersonResult.rows.length === 0) {
-      return res.status(404).json({ error: 'Funcionario não encontrada' });
+      return res.status(404).json({ error: 'Funcionario não encontrado' });
     }
 
     // Constrói a query de atualização dinamicamente para campos não nulos
+
+
     const currentPerson = existingPersonResult.rows[0];
+
+    //console.log('Dados atuais do funcionario:', currentPerson);
+
+    // As variáveis de entrada (salario_funcionario, cargo_id_cargo, porcentagem_comissao_funcionario)
+    // devem estar disponíveis no escopo, vindas da requisição (ex: req.body)
+
     const updatedFields = {
-      salario_funcionario: salario_funcionario !== undefined ? salario_funcionario : currentPerson.salario_funcionario
+      // com os dados que vieram na requisição, atualiza.
+      salario_funcionario: salario_funcionario !== undefined
+        ? salario_funcionario
+        : req.body.salario_funcionario,
+     
+      cargo_id_cargo: req.body.cargo_id_cargo,
+      porcentagem_comissao_funcionario: req.body.porcentagem_comissao_funcionario
+
     };
+   // console.log('Campos atualizados:', updatedFields);
 
     // Atualiza a funcionario
     const updateResult = await query(
@@ -121,6 +137,9 @@ exports.atualizarFuncionario = async (req, res) => {
 }
 
 exports.deletarFuncionario = async (req, res) => {
+
+  //console.log('Deletando funcionario com id:', req.params.id);
+ 
   try {
     const id = parseInt(req.params.id);
     // Verifica se a funcionario existe
@@ -130,7 +149,7 @@ exports.deletarFuncionario = async (req, res) => {
     );
 
     if (existingPersonResult.rows.length === 0) {
-      return res.status(404).json({ error: 'Funcionario não encontrada' });
+      return res.status(404).json({ error: 'Funcionario não encontrado' });
     }
 
     // Deleta a funcionario (as constraints CASCADE cuidarão das dependências)
