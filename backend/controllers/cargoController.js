@@ -12,7 +12,7 @@ exports.abrirCrudCargo = (req, res) => {
 exports.listarCargos = async (req, res) => {
   try {
     const result = await query('SELECT * FROM cargo ORDER BY id_cargo');
-     console.log('Resultado do SELECT:', result.rows);//verifica se está retornando algo
+   //  console.log('Resultado do SELECT:', result.rows);//verifica se está retornando algo
     res.json(result.rows);
   } catch (error) {
     console.error('Erro ao listar cargos:', error);
