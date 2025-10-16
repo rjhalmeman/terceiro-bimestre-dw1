@@ -628,3 +628,53 @@ async function selecionarPessoa(id) {
     searchId.value = id;
     await buscarPessoa();
 }
+
+document.addEventListener('DOMContentLoaded', popularCargosSelect());
+
+// Função que busca os cargos no backend e preenche o menu suspenso (select)
+async function popularCargosSelect() {
+    // 1. Encontrar o elemento <select>
+    const selectCargo = document.getElementById('cargo_id_cargo');
+
+    // Limpa as opções existentes (mantendo o "Selecione o Cargo" se for o caso)
+    // selectCargo.innerHTML = '<option value="">Selecione o Cargo</option>';
+
+    try {
+        // 2. Fazer a requisição para o backend
+        // Ajuste o endpoint (URL) de acordo com o que você configurou no seu router (ex: /api/cargos)
+        const response = await fetch('/cargo'); 
+
+        // 3. Verificar se a requisição foi bem-sucedida
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar cargos: ${response.statusText}`);
+        }
+
+        // 4. Converter a resposta para JSON
+        const cargos = await response.json();
+        
+        console.log('Cargos recebidos:', cargos); // Verifique no console se os dados chegaram
+
+        // 5. Iterar sobre os cargos e adicionar as opções ao <select>
+        cargos.forEach(cargo => {
+            // Cria um novo elemento <option>
+            const option = document.createElement('option');
+            
+            // Define o valor (que será o FK - id_cargo)
+            option.value = cargo.id_cargo; 
+            
+            // Define o texto visível na lista (que será o nome_cargo)
+            option.textContent = cargo.nome_cargo; 
+            
+            // Adiciona a opção ao select
+            selectCargo.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error('Falha ao popular o menu de cargos:', error);
+        // Opcional: Adicionar uma opção de erro ou mensagem para o usuário
+        const optionErro = document.createElement('option');
+        optionErro.textContent = 'Erro ao carregar cargos';
+        optionErro.disabled = true;
+        selectCargo.appendChild(optionErro);
+    }
+}

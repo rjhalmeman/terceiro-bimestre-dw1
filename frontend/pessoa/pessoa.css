@@ -415,9 +415,8 @@ footer {
 }
 
 /* Estilo para os containers individuais */
-.professor,
-.avaliador,
-.avaliado {
+.funcionario,
+.cliente {
     padding: 15px; /* Espaçamento interno */
     border-radius: 8px; /* Cantos arredondados */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave para profundidade */
@@ -426,23 +425,19 @@ footer {
 }
 
 /* Cores suaves de verde para cada container */
-.professor {
+.funcionario {
     background-color: #d4edda; /* Verde claro */
     border: 1px solid #c3e6cb; /* Borda sutil */
 }
 
-.avaliador {
+.cliente {
     background-color: #c3e6cb; /* Verde um pouco mais escuro */
     border: 1px solid #b1dfbb;
 }
 
-.avaliado {
-    background-color: #b1dfbb; /* Verde intermediário */
-    border: 1px solid #9fcdb9;
-}
 
 /* Estilo para os inputs */
-#spanProfessor {
+#spanFuncionario {
     margin-right: 8px; /* Espaço após o checkbox */
     
 }
@@ -460,8 +455,48 @@ input[type="text"] {
     margin-left: 8;
 }
 
+input[type="number"] {
+    border: 1px solid #ccc; /* Borda padrão */
+    border-radius: 4px; /* Cantos arredondados */
+    padding: 8px; /* Espaçamento interno */
+    margin-right: 8px; /* Espaço entre os inputs */
+    font-size: 14px; /* Tamanho da fonte */
+    margin-left: 8;
+}
+
+input[type="date"] {
+    border: 1px solid #ccc; /* Borda padrão */
+    border-radius: 4px; /* Cantos arredondados */
+    padding: 8px; /* Espaçamento interno */
+    margin-right: 8px; /* Espaço entre os inputs */
+    font-size: 14px; /* Tamanho da fonte */
+    margin-left: 8;
+}
+
+select {
+    border: 1px solid #ccc; /* Borda padrão */
+    border-radius: 4px; /* Cantos arredondados */
+    padding: 8px; /* Espaçamento interno */
+    margin-right: 8px; /* Espaço entre os inputs */
+    font-size: 14px; /* Tamanho da fonte */
+    margin-left: 8;
+}
+
 /* Ajusta o estilo do placeholder para ser mais discreto */
 ::placeholder {
     color: #888;
     font-style: italic;
+}
+
+#spanCliente {
+    /* Adiciona 10px de padding à esquerda e à direita. */
+    /* A sintaxe '0 10px' significa: 0 para cima/baixo, e 10px para esquerda/direita. */
+    padding:0 15px 0 5px; 
+    
+    /* Se você quiser 10px em todos os lados (topo, direita, baixo, esquerda): */
+    /* padding: 10px; */
+
+    /* Se quiser ser mais específico (apenas esquerda e direita): */
+    /* padding-left: 10px; */
+    /* padding-right: 10px; */
 }

@@ -65,17 +65,21 @@
                 <div class="funcionario">
                     <input type="checkbox" id="checkboxFuncionario" name="checkboxFuncionario">
                     <span id="spanFuncionario">Funcionário</span>
-                    <input type="text" id="cargo_id_cargo" name="cargo_id_cargo" placeholder="Id Cargo" style="display: inline;">
+                    <select id="cargo_id_cargo" name="cargo_id_cargo" style="display: inline;">
+                        <option value="">Cargo</option>
+                    </select>
+                    <label for="salario_funcionario">  Salário</label>
                     <input type="number" id="salario_funcionario" name="salario_funcionario" placeholder="Salário"
                         style="display: inline;">
+                        <label for="porcentagem_comissao_funcionario"> Comissão</label>
                     <input type="text" id="porcentagem_comissao_funcionario" name="porcentagem_comissao_funcionario"
                         placeholder="Porcentagem Comissão" style="display: inline;">
 
                 </div>
                 <div class="cliente">
                     <input type="checkbox" id="checkboxCliente" name="checkboxCliente">
-                    <span>Cliente</span>
-                    <label for="Renda mensal"></label>
+                    <span id="spanCliente">Cliente</span>
+                    <label for="renda_cliente">  Renda mensal</label>
                     <input type="number" id="renda_cliente" name="renda_cliente" placeholder="Renda mensal do cliente"
                         style="display: inline;">
                     <label for="data_cadastro_cliente">Data de cadastro</label>
